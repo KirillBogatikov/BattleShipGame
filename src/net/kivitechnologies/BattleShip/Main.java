@@ -8,8 +8,8 @@ import javax.swing.JFrame;
 import net.kivitechnologies.BattleShip.controls.Application;
 import net.kivitechnologies.BattleShip.view.Theme;
 
-public class Launcher {
- 
+public class Main {
+
     public static void main(String[] args) {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension screen = toolkit.getScreenSize(); 
@@ -20,4 +20,5 @@ public class Launcher {
         Application app = new Application(frame);
         app.showMainMenuScreen();
     }
+
 }
