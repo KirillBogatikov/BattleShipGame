@@ -27,7 +27,8 @@ class MultiPlayer(private val log :Log,
     private var pool = Executors newFixedThreadPool(2)
     private val processor = new PacketProcessor(log, networker, listener)
        
-    def start(hash: String) :Unit = {
+    def start() :Unit = {
+        this hash = HashGenerator.next()
         log d(TAG, "Using hash: " + hash)
         this hash = hash
         pool execute(() => {
