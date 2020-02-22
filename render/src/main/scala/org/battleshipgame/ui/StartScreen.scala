@@ -35,8 +35,6 @@ abstract class StartScreen extends Screen with InputListener {
         //TODO: hover button
     }
     
-    override def onKeyEnter(key: Char): Unit = { }
-    
     override def onMouseMove(x: Int, y: Int): Unit = {
         //TODO: hover button
     }

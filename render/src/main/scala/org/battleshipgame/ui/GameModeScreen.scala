@@ -22,7 +22,7 @@ abstract class GameModeScreen extends Screen with InputListener {
     def singleGame(): View
     def multiPlayer(): View
     
-     override def render(renderer: Renderer): Unit = {
+    override def render(renderer: Renderer): Unit = {
         renderer begin()
         
         renderer image(new Rectangle(0, 0, size width, size height), content background)
@@ -36,8 +36,6 @@ abstract class GameModeScreen extends Screen with InputListener {
     override def update(renderer: Renderer): Unit = {
         //TODO: hover button
     }
-    
-    override def onKeyEnter(key: Char): Unit = { }
     
     override def onMouseMove(x: Int, y: Int): Unit = {
         //TODO: hover button
