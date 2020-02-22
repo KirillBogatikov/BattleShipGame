@@ -33,7 +33,7 @@ class UdpNetworker(val port: Int) extends Networker {
 
         if (packet != null && packet.hash == hash) {
             clientIp = dp getAddress()
-            clientPort = dp getPort
+            clientPort = dp getPort()
 
             return packet
         }

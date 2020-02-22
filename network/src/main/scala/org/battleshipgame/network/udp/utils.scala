@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec
 object Crypto {
     private val PASS = "HelloManLetsPlayBattleShipGameOnDifferentDevices"
     private val METHOD = "AES"
-    private val KEY = new SecretKeySpec(PASS getBytes (), METHOD)
+    private val KEY = new SecretKeySpec(PASS getBytes(), METHOD)
 
     def encrypt(content: Array[Byte]): Array[Byte] = {
         val cipher = Cipher getInstance(METHOD)

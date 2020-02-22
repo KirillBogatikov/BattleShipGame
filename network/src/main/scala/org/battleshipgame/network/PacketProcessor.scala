@@ -22,13 +22,13 @@ class PacketProcessor(
         } else {
             packet group match {
                 case HOW_ARE_YOU => {
-                    listener onFriendConnected
+                    listener onFriendConnected()
 
                     var responsePacket = new Packet(packet hash, I_M_FINE, null)
                     networker send(responsePacket)
                 }
                 case I_M_FINE => {
-                    listener onConnectedToFriend
+                    listener onConnectedToFriend()
                 }
                 case WIN => listener.onGameEnd(true)
                 case LOSE => listener.onGameEnd(false)

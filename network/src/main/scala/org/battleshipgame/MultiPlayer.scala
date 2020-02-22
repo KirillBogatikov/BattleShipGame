@@ -31,15 +31,14 @@ class MultiPlayer(
     def start(): Unit = {
         this hash = HashGenerator next()
         log d (TAG, "Using hash: " + hash)
-        this hash = hash
         pool execute(() => {
-            while (alive get) {
+            while (alive get()) {
                 val time = System currentTimeMillis()
                 log d(TAG, "Waiting Packet")
 
                 var packet = networker receive(hash);
 
-                log d(TAG, "Packet received after " + (System.currentTimeMillis - time) + "ms. Processing Packet")
+                log d(TAG, "Packet received after " + (System.currentTimeMillis() - time) + "ms. Processing Packet")
 
                 processor process(packet);
 
