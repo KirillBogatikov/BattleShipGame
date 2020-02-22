@@ -1,7 +1,6 @@
 package org.battleshipgame.render
 
 import scala.language.postfixOps
-import org.battleshipgame.ui.ContentResolver
 
 trait Screen {
     def content(): ContentResolver

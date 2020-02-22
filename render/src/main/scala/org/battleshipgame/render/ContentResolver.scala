@@ -1,6 +1,4 @@
-package org.battleshipgame.ui
-
-import org.battleshipgame.render.Image
+package org.battleshipgame.render
 
 trait ContentResolver {
     def background(): Image
