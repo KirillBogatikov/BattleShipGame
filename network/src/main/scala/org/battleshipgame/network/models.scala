@@ -1,8 +1,8 @@
 package org.battleshipgame.network
 
-case class Packet(val hash: String, val group: String, val value: String) { }
+case class Packet(val hash: String, val group: String, val value: String) {}
 
-case class GameId(val hash: String, val connection: String) { }
+case class GameId(val hash: String, val connection: String) {}
 
 object Shot {
     val SHOT = "shotpos"
@@ -11,7 +11,7 @@ object Shot {
     val MISS = "shotmiss"
 }
 
-case class Shot(val x: Int, val y: Int) { }
+case class Shot(val x: Int, val y: Int) {}
 
 object Auth {
     val HOW_ARE_YOU = "helloman, how are you?"
