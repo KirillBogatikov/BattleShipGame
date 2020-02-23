@@ -25,8 +25,7 @@ abstract class GameModeScreen extends Screen with InputListener {
     override def render(renderer: Renderer): Unit = {
         renderer begin()
         
-        renderer image(new Rectangle(0, 0, size width, size height), content background)
-        
+        background(renderer)
         button(renderer, singleGame)
         button(renderer, multiPlayer)
         

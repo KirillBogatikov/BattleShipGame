@@ -24,8 +24,7 @@ abstract class StartScreen extends Screen with InputListener {
     override def render(renderer: Renderer): Unit = {
         renderer begin()
         
-        renderer image(new Rectangle(0, 0, size width, size height), content background)
-        
+        background(renderer, true)
         buttons foreach(view => button(renderer, view))
         
         renderer end()

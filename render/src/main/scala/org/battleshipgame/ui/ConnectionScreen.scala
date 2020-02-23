@@ -29,8 +29,7 @@ abstract class ConnectionScreen extends Screen with InputListener {
     override def render(renderer: Renderer): Unit = {
         renderer begin()
         
-        renderer image(new Rectangle(0, 0, size width, size height), content background)
-        
+        background(renderer)
         button(renderer, connect)
         button(renderer, create)
         input(renderer, gameId)
