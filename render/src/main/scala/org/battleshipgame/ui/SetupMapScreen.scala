@@ -5,11 +5,11 @@ import scala.language.postfixOps
 import org.battleshipgame.render.BattleFieldView
 import org.battleshipgame.render.ImageView
 import org.battleshipgame.render.Point
+import org.battleshipgame.render.Rectangle
 import org.battleshipgame.render.Renderer
 import org.battleshipgame.render.Screen
 import org.battleshipgame.render.View
-import org.battleshipgame.ui.Ship._
-import org.battleshipgame.render.Rectangle
+import org.battleshipgame.ui.ShipOrientation._
 
 object SetupMapScreen {
     protected var instance: SetupMapScreen = null
@@ -23,14 +23,16 @@ abstract class SetupMapScreen extends Screen {
     SetupMapScreen.instance = this
     
     protected var battlefield: BattleField = null
+    protected var orientation: ShipOrientation = HORIZONTAL
     
     def init(battlefield: BattleField): Unit = {
         this battlefield = battlefield
     }
     
     def start(): View
-    def field(): BattleFieldView
-    def forShip(size: Int, orientation: Int = -1): ImageView
+    def rotate(): ImageView
+    def field(): BattleFieldView 
+    def forShip(size: ShipSize, orientation: ShipOrientation): ImageView
     
     override def render(renderer: Renderer): Unit = {
         renderer begin()
@@ -38,13 +40,13 @@ abstract class SetupMapScreen extends Screen {
         background(renderer)
                 
         var canStart = true
-        for(size <- TORPEDO until WARSHIP) {
+        ShipSize.values() foreach(size => {
             if (battlefield.count(size) > 0) {
-                val view = forShip(size)
+                val view = forShip(size, orientation)
                 renderer image(view rectangle, view image)
                 canStart = false
             }
-        }
+        })
         
         if (canStart) {
             button(renderer, start)
@@ -52,7 +54,7 @@ abstract class SetupMapScreen extends Screen {
         
         battlefield(renderer, field)
         
-        for(size <- TORPEDO until WARSHIP) {
+        ShipSize.values() foreach(size => {
             battlefield ships(size) foreach(ship => {
                 val view = forShip(size, ship orientation)
                 var fieldRect = field rectangle
@@ -64,7 +66,7 @@ abstract class SetupMapScreen extends Screen {
                                
                 renderer image(rect, view image)
             })
-        }
+        })
         
         renderer end()
     }
@@ -77,16 +79,16 @@ abstract class SetupMapScreen extends Screen {
     override def onMouseDown(x: Int, y: Int): Unit = {
         val point = new Point(x, y)
         
-        for(size <- TORPEDO until WARSHIP) {
-            val ship = forShip(size)
+        ShipSize.values() foreach(size => {
+            val ship = forShip(size, orientation)
             if(ship.rectangle contains(point)) {
-                battlefield onShipDrag(size)
+                battlefield onShipDrag(size, orientation)
             }
-        }
+        })
     }
     
     override def onMouseMove(x: Int, y: Int): Unit = {
-        if (battlefield.draggedShip() > TORPEDO) {
+        if (battlefield.draggedShip() != null) {
             battlefield invalidate()
         }
         //TODO: hover button
@@ -96,7 +98,7 @@ abstract class SetupMapScreen extends Screen {
         val point = new Point(x, y)
         val rect = field rectangle
         
-        if (battlefield.draggedShip() > TORPEDO && rect.contains(point)) {
+        if (battlefield.draggedShip() != null && rect.contains(point)) {
             val ox = rect.x - x;
             val oy = rect.y - y
             val i = ox / (rect.width / 10)
@@ -111,6 +113,16 @@ abstract class SetupMapScreen extends Screen {
         
         if (start.rectangle contains(point)) {
             start onClick()
+        }
+        
+        if (rotate.rectangle contains(point)) {
+            rotate onClick();
+            
+            if (orientation == HORIZONTAL) {
+                orientation = VERTICAL
+            } else {
+                orientation = HORIZONTAL
+            }
         }
     }
 }
