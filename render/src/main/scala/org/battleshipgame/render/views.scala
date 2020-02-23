@@ -21,7 +21,4 @@ trait BattleFieldView extends View {
     override def textSize(): Double = 0.0
     override def textSize(size: Double): Unit = {}
     override def onClick(): Unit = {}
-    
-    def placeShip(x: Int, y: Int, c: Int): Boolean
-    def removeShip(x: Int, y: Int, c: Int): Unit
 }
