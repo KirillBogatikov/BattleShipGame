@@ -10,3 +10,18 @@ trait View {
     
     def onClick(): Unit
 }
+
+trait ImageView extends View {
+    def image(): Image
+}
+
+trait BattleFieldView extends View {
+    override def text(): String = ""
+    override def text(text: String): Unit = {}
+    override def textSize(): Double = 0.0
+    override def textSize(size: Double): Unit = {}
+    override def onClick(): Unit = {}
+    
+    def placeShip(x: Int, y: Int, c: Int): Boolean
+    def removeShip(x: Int, y: Int, c: Int): Unit
+}
