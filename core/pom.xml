@@ -6,4 +6,16 @@
     <version>2.0.0</version>
   </parent>
   <artifactId>core</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.battle-ship-game</groupId>
+  		<artifactId>network</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.battle-ship-game</groupId>
+  		<artifactId>render</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  </dependencies>
 </project>
