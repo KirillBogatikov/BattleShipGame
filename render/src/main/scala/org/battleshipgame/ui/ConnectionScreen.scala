@@ -2,45 +2,16 @@ package org.battleshipgame.ui
 
 import scala.language.postfixOps
 
-import org.battleshipgame.render.InputListener
-import org.battleshipgame.render.Point
-import org.battleshipgame.render.Rectangle
-import org.battleshipgame.render.Renderer
-import org.battleshipgame.render.Screen
-import org.battleshipgame.render.View
+import org.battleshipgame.render.{Screen, TextView, Button}
 
-object ConnectionScreen {
-    protected var instance: ConnectionScreen = null
+trait ConnectionScreen extends Screen {
+    def buttons(): Array[Button]
+    def gameId(): TextView
     
-    def impl(): ConnectionScreen = {
-        return instance;
-    }
-}
-
-abstract class ConnectionScreen extends Screen with InputListener {
-    ConnectionScreen.instance = this
-    
-    def connect(): View
-    def create(): View
-    def gameId(): View
+    override def inputs(): Array[TextView] = Array(gameId)
     
     private var gameIdCursorPosition: Int = 0
-    
-    override def render(renderer: Renderer): Unit = {
-        renderer begin()
         
-        background(renderer)
-        button(renderer, connect)
-        button(renderer, create)
-        input(renderer, gameId)
-        
-        renderer end()
-    }
-    
-    override def update(renderer: Renderer): Unit = {
-        //TODO: hover button
-    }
-    
     override def onKeyPress(key: Int): Unit = {
         var text = gameId text
         
@@ -65,19 +36,5 @@ abstract class ConnectionScreen extends Screen with InputListener {
         }
         
         gameId text(text)
-    }
-    
-    override def onMouseMove(x: Int, y: Int): Unit = {
-        //TODO: hover button
-    }
-    
-    override def onClick(x: Int, y: Int): Unit = {
-        val point = new Point(x, y)
-        
-        if (connect.rectangle contains(point)) {
-            connect onClick()
-        } else if (create.rectangle contains(point)) {
-            create onClick();   
-        }
     }
 }

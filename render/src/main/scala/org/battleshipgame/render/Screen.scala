@@ -2,42 +2,65 @@ package org.battleshipgame.render
 
 import scala.language.postfixOps
 
-import org.battleshipgame.render.ColorUtils._
+import org.battleshipgame.render.ButtonState.{DEFAULT, HOVERED, PRESSED}
+import org.battleshipgame.render.ColorUtils.alpha
 
 trait Screen extends InputListener {
-    def content(): ContentResolver
+    def renderer(): Renderer
+    def styles(): StylesResolver
     def size(): Size
     def strokeSize(): Int
-    def render(renderer: Renderer): Unit
-    def update(renderer: Renderer): Unit
+    
+    def buttons(): Array[Button] = Array()
+    def images(): Array[ImageView] = Array()
+    def labels(): Array[TextView] = Array()
+    def inputs(): Array[TextView] = Array()
+    
+    def render(): Unit = {
+        renderer begin()
         
-    protected def button(renderer: Renderer, button: View): Unit = {
+        background()
+        buttons foreach(button)
+        images foreach(view => renderer image(view rectangle, view image))
+        labels foreach(label)
+        inputs foreach(input)
+        
+        renderer end()
+    }
+        
+    protected def button(button: Button): Unit = {
         renderer fill(true)
         renderer stroke(false)
         
-        renderer fill(content primaryColor)
-        renderer text(content textColor)
+        val color = button state match {
+            case HOVERED => styles buttonHovered
+            case PRESSED => styles buttonPressed
+            case DEFAULT => styles buttonDefault
+        }
+        
+        renderer fill(color)
+        renderer text(styles textColor)
         
         renderer rectangle(button rectangle)
         renderer text(button rectangle, button text, button textSize)
     }
     
-    protected def input(renderer: Renderer, input: View): Unit = {
+    protected def input(input: TextView): Unit = {
         renderer fill(true)
         renderer stroke(true)
         renderer stroke(strokeSize)
         
-        val bg = alpha(content primaryColor, 64) //25%
+        val bg = alpha(styles inputBackground, 64) //25%
         renderer fill(bg)
-        renderer stroke(content secondaryColor)
-        renderer text(content textColor)
+        renderer stroke(styles linesColor)
+        renderer text(styles textColor)
         
         renderer rectangle(input rectangle)
         renderer text(input rectangle, input text, input textSize)
     }
     
-    protected def battlefield(renderer: Renderer, field: BattleFieldView): Unit = {
-        val rect = field rectangle
+    protected def grid(grid: MapGridView): Unit = {
+        val rect = grid rectangle
         val cellSize = (rect.width - strokeSize * 11) / 10 + strokeSize
         
         renderer fill(true)
@@ -53,24 +76,62 @@ trait Screen extends InputListener {
             renderer line(rect.x, y, rect.x + rect.height, y)
         }
     }
-    
-    protected def background(renderer: Renderer, clear: Boolean = false): Unit = {
-        val rect = new Rectangle(0, 0, size width, size height)
-        renderer image(rect, content background)
         
-        if (!clear) {
-            renderer fill(argb(64, 0, 0, 0))
-            renderer rectangle(rect)
-        }
+    protected def label(view: TextView): Unit = {
+        renderer text(styles textColor)
+        renderer text(view rectangle, view text, view textSize)
+    }
+    
+    protected def background(): Unit = {
+        val rect = new Rectangle(0, 0, size width, size height)
+        renderer image(rect, styles background)
     }
     
     override def onKeyPress(key: Int): Unit = {}
     
-    override def onMouseDown(x: Int, y: Int): Unit = {}
+    override def onMouseDown(x: Int, y: Int): Unit = {
+        val point = new Point(x, y)
+        val option = buttons find(view => view.rectangle contains(point))
+        
+        if (!option.isEmpty) {
+            option.get state = PRESSED
+        }
+    }
     
-    override def onMouseMove(x: Int, y: Int): Unit = {}
+    override def onMouseMove(x: Int, y: Int): Unit = {
+        val point = new Point(x, y)
+        val prevent = buttons find(view => view.state == HOVERED)
+        val current = buttons find(view => view.rectangle contains(point)) 
+                
+        if (!prevent.isEmpty) {
+            prevent.get state = DEFAULT
+        }
+        if (!current.isEmpty) {
+            current.get state = HOVERED
+        }
+    }
     
-    override def onMouseUp(x: Int, y: Int): Unit = {}
+    override def onMouseUp(x: Int, y: Int): Unit = {
+        val point = new Point(x, y)
+        val option = buttons find(view => view.state == PRESSED)
+        
+        if (!option.isEmpty) {
+            val btn = option.get
+            if (btn.rectangle contains(point))
+                btn state = HOVERED
+            else
+                btn state = DEFAULT
+                
+            btn onClick()
+        }
+    }
     
-    override def onClick(x: Int, y: Int): Unit = {}
+    override def onClick(x: Int, y: Int): Unit = {
+        val point = new Point(x, y)
+        val option = buttons find(view => view.rectangle contains(point))
+                
+        if (!option.isEmpty) {
+            option.get onClick()
+        }
+    }
 }

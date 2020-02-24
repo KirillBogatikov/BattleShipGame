@@ -3,39 +3,39 @@ package org.battleshipgame.render
 import scala.language.postfixOps
 
 object ColorUtils {
-    def alpha(color: Long): Byte = {
-        return (color >> 24) toByte
+    def alpha(color: Long): Int = {
+        return (color >> 24) toInt
     }
     
-    def red(color: Long): Byte = {
-        return ((color >> 16) & 0xFF) toByte
+    def red(color: Long): Int = {
+        return ((color >> 16) & 0xFF) toInt
     }
     
-    def green(color: Long): Byte = {
-        return ((color >> 8) & 0xFF) toByte
+    def green(color: Long): Int = {
+        return ((color >> 8) & 0xFF) toInt
     }
     
-    def blue(color: Long): Byte = {
-        return (color & 0xFF) toByte
+    def blue(color: Long): Int = {
+        return (color & 0xFF) toInt
     }
     
-    def alpha(color: Long, alpha: Byte): Long = {
+    def alpha(color: Long, alpha: Int): Long = {
         return argb(alpha, red(color), green(color), blue(color))
     }
     
-    def red(color: Long, red: Byte): Long = {
+    def red(color: Long, red: Int): Long = {
         return argb(alpha(color), red, green(color), blue(color))
     }
     
-    def green(color: Long, green: Byte): Long = {
+    def green(color: Long, green: Int): Long = {
         return argb(alpha(color), red(color), green, blue(color))
     }
     
-    def blue(color: Long, blue: Byte): Long = {
+    def blue(color: Long, blue: Int): Long = {
         return argb(alpha(color), red(color), green(color), blue)
     }
         
-    def argb(alpha: Byte, red: Byte, green: Byte, blue: Byte): Long = {
+    def argb(alpha: Int, red: Int, green: Int, blue: Int): Long = {
         return (alpha << 24) | (red << 16) | (green << 8) | blue
     }
 }
