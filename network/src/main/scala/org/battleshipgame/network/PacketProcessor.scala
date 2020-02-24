@@ -33,8 +33,9 @@ class PacketProcessor(
                 case WIN => listener.onGameEnd(true)
                 case LOSE => listener.onGameEnd(false)
                 case SHOT => {
-                    val result = listener onShot(parse(packet value))
-                    var responsePacket = new Packet(packet hash, result, null)
+                    val pos = parse(packet value)
+                    val result = listener onShot(pos(0), pos(1))
+                    var responsePacket = new Packet(packet hash, result toString, null)
                     networker send(responsePacket)
                 }
             }

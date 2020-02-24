@@ -7,17 +7,17 @@ import scala.language.postfixOps
 object ShotParser {
     private val DELIMITER = ","
 
-    def parse(string: String): Shot = {
+    def parse(string: String): Array[Int] = {
         var parts = string split(DELIMITER)
 
         if (parts.length != 2) return null
 
-        return new Shot(parts(0) toInt, parts(1) toInt)
+        return Array(parts(0) toInt, parts(1) toInt)
     }
 
-    def stringify(shot: Shot): String = {
+    def stringify(x: Int, y: Int): String = {
         var builder = new StringBuilder()
-        builder append(shot.x) append(DELIMITER) append(shot.y)
+        builder append(x) append(DELIMITER) append(y)
 
         return builder toString
     }
