@@ -16,6 +16,7 @@ trait Screen extends InputListener {
         renderer stroke(false)
         
         renderer fill(content primaryColor)
+        renderer text(content textColor)
         
         renderer rectangle(button rectangle)
         renderer text(button rectangle, button text, button textSize)
@@ -29,6 +30,7 @@ trait Screen extends InputListener {
         val bg = alpha(content primaryColor, 64) //25%
         renderer fill(bg)
         renderer stroke(content secondaryColor)
+        renderer text(content textColor)
         
         renderer rectangle(input rectangle)
         renderer text(input rectangle, input text, input textSize)

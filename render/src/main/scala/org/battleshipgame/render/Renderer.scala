@@ -2,7 +2,17 @@ package org.battleshipgame.render
 
 import scala.language.postfixOps
 
-trait Renderer {
+object Renderer {
+    protected var instance: Renderer = null
+    
+    def impl(): Renderer = {
+        return instance
+    }
+}
+
+abstract class Renderer {
+    Renderer.instance = this
+    
     def begin(): Unit
     def end(): Unit
     
@@ -11,6 +21,7 @@ trait Renderer {
 
     def stroke(color: Long): Unit
     def fill(color: Long): Unit
+    def text(color: Long): Unit
     
     def stroke(size: Int): Unit
 
