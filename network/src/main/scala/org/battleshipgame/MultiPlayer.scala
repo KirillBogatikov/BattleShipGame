@@ -54,9 +54,9 @@ class MultiPlayer(
         log d(TAG, "Processor started in thread pool")
     }
 
-    def shot(shot: Shot): Unit = {
+    def shot(x: Int, y:Int): Unit = {
         pool execute(() => {
-            val packet = new Packet(hash, SHOT, shotStringify(shot))
+            val packet = new Packet(hash, SHOT, shotStringify(x, y))
             networker send(packet)
         })
     }
