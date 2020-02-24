@@ -1,5 +1,12 @@
 package org.battleshipgame.ui;
 
+/**
+ * Размер корабля - Линкор, Крейсер, Эсминец, Торпедный катер
+ * 
+ * @author Кирилл Испольнов
+ * @version 1.0
+ * @since 2.0.0
+ */
 public enum ShipSize {
 	WARSHIP   (4),
 	CRUISER   (3),
