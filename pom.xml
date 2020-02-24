@@ -9,6 +9,7 @@
   	<module>legacy</module>
   	<module>render</module>
   	<module>core</module>
+  	<module>desktop</module>
   </modules>
 	<properties>
 		<cuba.version>1.1.0-SNAPSHOT</cuba.version>
