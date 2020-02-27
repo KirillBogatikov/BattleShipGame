@@ -56,6 +56,13 @@ trait StylesResolver {
     def textColor(): Long
     
     /**
+     * Цвет текста
+     * 
+     * темная тема темная тема темная тема
+     */
+    def darkTextColor(): Long
+    
+    /**
      * Толщина линии
      */
     def strokeSize(): Int
