@@ -145,7 +145,6 @@ public class SwingRenderer implements Renderer {
 		FontMetrics metrics = g2d.getFontMetrics();
 		
 		String[] lines = text.split("\n");
-		System.out.println(lines.length);
 		
 		int lineHeight = metrics.getAscent() - metrics.getDescent();
 		int centerY = rectangle.y() + rectangle.height() / 2 + lineHeight / 2;

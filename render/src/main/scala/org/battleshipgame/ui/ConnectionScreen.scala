@@ -12,25 +12,10 @@ import org.battleshipgame.render.{Screen, TextView, Button, ImageView}
  * @since 2.0.0
  */
 abstract class ConnectionScreen extends Screen {
-    def buttons(): Array[Button]
-    def backImage(): ImageView
-    def backLabel(): TextView
-    def gameId(): TextView
+    def gameId(): TextView = inputs()(0)
     
     private var gameIdCursorPosition: Int = 0
-    
-    override def render(): Unit = {
-        super.render()
         
-        renderer begin()
-        
-        renderer image(backImage rectangle, backImage image)
-        label(backLabel)
-        input(gameId)
-        
-        renderer end()
-    }
-    
     /**
      * Ооо, проверяем ввод символов и меняем содержимое текстового поля
      * Слабонервные - пройдите в следующий файл
@@ -44,19 +29,20 @@ abstract class ConnectionScreen extends Screen {
                 gameIdCursorPosition -= 1
                 val left = text substring(0, gameIdCursorPosition) 
                 val right = text substring(gameIdCursorPosition + 1)
-                
+                                
                 text = left + right
             }
-        } else if (key == 46) {
+        } else if (key == 127) {
             //DELETE del
-            if (gameIdCursorPosition < text.length) {
+            if (gameIdCursorPosition < text.length - 1) {
                 val left = text substring(0, gameIdCursorPosition)
                 val right = text substring(gameIdCursorPosition + 1)
                 gameIdCursorPosition -= 1
-                
+                                
                 text = left + right
             }
         } else {
+            gameIdCursorPosition += 1
             //какой-то символ
             text = text + (key toChar)
         }
