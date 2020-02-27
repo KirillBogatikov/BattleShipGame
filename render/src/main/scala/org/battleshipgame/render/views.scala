@@ -28,6 +28,9 @@ class TextView(rectangle: Rectangle, var text: String, val textSize: Double, var
         
     def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, dark: Boolean) =
         this(new Rectangle(x, y, w, h), text, textSize, dark, () => {})
+        
+    def this(x: Int, y: Int, w: Int, h: Int, r: Double, text: String, textSize: Double, dark: Boolean) =
+        this(new Rectangle(x, y, w, h, r), text, textSize, dark, () => {})
 }
 
 /**
