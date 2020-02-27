@@ -14,7 +14,12 @@ object ColorUtils {
      * Подайте мне прозрачность, сударь
      */
     def alpha(color: Long): Int = {
-        return (color >> 24) toInt
+        val a = (color >> 24) toInt
+        
+        if (a < 0) {
+            return a + 256
+        }
+        return a
     }
     
     /**
@@ -74,6 +79,6 @@ object ColorUtils {
      * Упаковать компоненты в числовое значение
      */
     def argb(alpha: Int, red: Int, green: Int, blue: Int): Long = {
-        return (alpha << 24) | (red << 16) | (green << 8) | blue
+        return (alpha & 0xFF) << 24 | (red & 0xFF) << 16 | (green & 0xFF) << 8 | (blue & 0xFF)
     }
 }
