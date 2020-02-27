@@ -35,7 +35,7 @@ trait ConnectionScreen extends Screen {
      * Ооо, проверяем ввод символов и меняем содержимое текстового поля
      * Слабонервные - пройдите в следующий файл
      */
-    override def onKeyPress(key: Int): Unit = {
+    override def onKeyPress(key: Int): Boolean = {
         var text = gameId text
         
         if (key == 8) {
@@ -62,6 +62,7 @@ trait ConnectionScreen extends Screen {
         }
         
         //апдейт
-        gameId text(text)
+        gameId text = text
+        return true
     }
 }

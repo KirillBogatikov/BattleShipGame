@@ -9,7 +9,7 @@ import org.battleshipgame.render.{Button, Screen}
  * 
  * Минималистично, однако (с)
  */
-trait StartScreen extends Screen {
+abstract class StartScreen extends Screen {
     /**
      * Чисто напоминалка, что этот метод надо реализовать
      */
