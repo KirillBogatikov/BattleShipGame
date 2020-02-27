@@ -70,10 +70,11 @@ trait Screen extends InputListener {
             case PRESSED => styles buttonPressed
             case DEFAULT => styles buttonDefault
         }
-        
+                
         renderer fill(color)
         renderer text(styles textColor)
-        
+                
+        renderer shadow(button rectangle)
         renderer rectangle(button rectangle)
         renderer text(button rectangle, button text, button textSize)
     }
@@ -120,7 +121,10 @@ trait Screen extends InputListener {
      * Нарисовать надпись
      */
     protected def label(view: TextView): Unit = {
-        renderer text(styles textColor)
+        if (view dark) 
+            renderer text(styles darkTextColor)
+        else
+            renderer text(styles textColor)
         renderer text(view rectangle, view text, view textSize)
     }
     
@@ -132,36 +136,45 @@ trait Screen extends InputListener {
         renderer image(rect, styles background)
     }
     
-    override def onKeyPress(key: Int): Unit = {}
+    override def onKeyPress(key: Int): Boolean = false
     
     /**
      * Если юзер нажал клавишу мыши, проходим все кнопки и ищем ту, на которой находится курсор
      * Т.к. клавишу еще зажата, меняем состояние кнопки на НАЖАТАЯ и (возможно) перерисовываем ее
      */
-    override def onMouseDown(x: Int, y: Int): Unit = {
+    override def onMouseDown(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val option = buttons find(view => view.rectangle contains(point))
         
         if (!option.isEmpty) {
             option.get state = PRESSED
+            return true
         }
+        return false
     }
     
     /**
      * Если юзер двинул мышь, проходим все кнопки и ищем ту, на которой находится курсор
      * Ну а потом меняем состояние кнопки на ХОВЕРЕД (не придумал короткого перевода) и (возможно) перерисовываем ее
      */
-    override def onMouseMove(x: Int, y: Int): Unit = {
+    override def onMouseMove(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val prevent = buttons find(view => view.state == HOVERED)
         val current = buttons find(view => view.rectangle contains(point)) 
-                
+              
+        if (!prevent.isEmpty && !current.isEmpty && prevent.get == current.get) {
+            return false
+        }
+        
         if (!prevent.isEmpty) {
             prevent.get state = DEFAULT
+            return true
         }
         if (!current.isEmpty) {
             current.get state = HOVERED
+            return true
         }
+        return false
     }
     
     /**
@@ -169,7 +182,7 @@ trait Screen extends InputListener {
      * Ну а потом меняем состояние кнопки на ОБЫЧНАЯ и (возможно) перерисовываем ее + вызываем ее onClick
      * (по сути юзер же кликнул)
      */
-    override def onMouseUp(x: Int, y: Int): Unit = {
+    override def onMouseUp(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val option = buttons find(view => view.state == PRESSED)
         
@@ -180,33 +193,36 @@ trait Screen extends InputListener {
             else
                 btn state = DEFAULT
                 
-            btn onClick()
+            return true
         }
+        return false
     }
     
     /**
      * Если юзер кликнул (или пальцем ткнул, невежа) то ищем кнопку, на которую он кликнул
      * и вызываем ее onClick
      */
-    override def onClick(x: Int, y: Int): Unit = {
+    override def onClick(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val btn = buttons find(view => view.rectangle contains(point))
                 
         if (!btn.isEmpty) {
-            btn.get onClick()
-            return
+            btn.get.listener onClick()
+            return true
         }
         
         val img = images find(view => view.rectangle contains(point))
         if (!img.isEmpty) {
-            img.get onClick()
-            return
+            img.get.listener onClick()
+            return true
         }
         
         val txt = labels find(view => view.rectangle contains(point))
         if (!txt.isEmpty) {
-            txt.get onClick()
-            return
+            txt.get.listener onClick()
+            return true
         }
+        
+        return false
     }
 }
