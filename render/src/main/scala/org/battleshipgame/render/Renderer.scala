@@ -66,7 +66,7 @@ trait Renderer {
      * 
      * Материал дизайн, что-ли?! (с)
      */
-    def shadow(rectangle: Rectangle, width: Int, height: Int): Unit
+    def shadow(rectangle: Rectangle): Unit
     
     /**
      * Отрисовать линию
