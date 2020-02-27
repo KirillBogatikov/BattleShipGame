@@ -1,5 +1,7 @@
 package org.battleshipgame.ui
 
+import org.battleshipgame.render.Rectangle
+
 /**
  * Док кораблей, этакий мэнэджэр
  * 
@@ -7,7 +9,7 @@ package org.battleshipgame.ui
  * @version 1.0
  * @since 2.0.0
  */
-trait ShipsDock {
+abstract class ShipsDock {
     /**
      * Текущая ориентация корабликов (вынесена для удобства)
      */
@@ -42,4 +44,11 @@ trait ShipsDock {
      * Если юзер ткнул в кораблик
      */
     def onShipClick(x: Int, y: Int): Unit
+    
+    /**
+     * Дай зону ошибки
+     * 
+     * Не инвалид, а прямоугольник с ограниченными возможностями (с)
+     */
+    def invalid(): Rectangle
 }

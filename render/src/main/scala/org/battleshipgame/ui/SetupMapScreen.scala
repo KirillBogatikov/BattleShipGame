@@ -53,14 +53,7 @@ trait SetupMapScreen extends Screen {
      * Дай кораблик по размеру и ориентации
      */
     def ship(size: ShipSize, orientation: ShipOrientation): ImageView
-    
-    /**
-     * Дай зону ошибки
-     * 
-     * Не инвалид, а прямоугольник с ограниченными возможностями (с)
-     */
-    def invalid(): Rectangle
-    
+            
     override def render(): Unit = {
         renderer begin()
         
@@ -90,12 +83,12 @@ trait SetupMapScreen extends Screen {
             renderer image(rect, view image)
         })
         
-        if (invalid != null) {
+        if (dock.invalid != null) {
             renderer fill(true)
             renderer stroke(true)
             renderer fill(styles highlightBackground)
             renderer stroke(styles highlightStroke)
-            renderer rectangle(invalid)
+            renderer rectangle(dock invalid)
         }
             
         renderer end()
@@ -104,32 +97,41 @@ trait SetupMapScreen extends Screen {
     /**
      * Чекаем, может юзер начал тащить кораблик (drag'n'drop)
      */
-    override def onMouseDown(x: Int, y: Int): Unit = {
+    override def onMouseDown(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
+        var result = false
         
         dock left() foreach(s => {
             val view = ship(s size, s orientation)
             if(view.rectangle contains(point)) {
-                dock onShipDrag(s size, s orientation)
+                dock draggedShip = s.size
+                dock orientation = s.orientation
+                result = true
             }
         })
+        
+        return result
     }
         
     /**
      * Чекаем, может бросил кораблик (drag'n'drop)
      */
-    override def onMouseUp(x: Int, y: Int): Unit = {
+    override def onMouseUp(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         
         if (dock.draggedShip != null) {
             if (grid.rectangle.contains(point)) {
                 val gridPoint = gridCoords(point)
                 dock onShipDrop(gridPoint x, gridPoint y)
+                return true
             } else {
                 //нельзя бросать кораблики где попало
                 dock draggedShip = null
+                return true
             }
         }
+        
+        return false
     }
     
     /**
@@ -159,15 +161,15 @@ trait SetupMapScreen extends Screen {
         return new Point(x, y)
     }
     
-    override def onClick(x: Int, y: Int): Unit = {
+    override def onClick(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         
         /*
          * Проверяем кнопку Начать игру
          */
         if (start.rectangle contains(point)) {
-            start onClick()
-            return
+            start.listener onClick()
+            return true
         }
         
         /*
@@ -179,21 +181,22 @@ trait SetupMapScreen extends Screen {
             } else {
                 dock orientation = HORIZONTAL
             }
-            return
+            return true
         }
         
         /*
          * Проверяем кнопку Назад
          */
         if (backImage.rectangle.contains(point) || backLabel.rectangle.contains(point)) {
-            backImage onClick()
-            return
+            backImage.listener onClick()
+            return true
         }
         
         /*
          * в Scala нет break. Просто раз - и нет
          * но есть расширение Breaks (делает то же самое и даже чуточку больше) :D
          */
+        var result: Boolean = false
         val mybreaks = new Breaks()
         import mybreaks.{break, breakable}
         
@@ -202,15 +205,16 @@ trait SetupMapScreen extends Screen {
              * Проверяем кораблики
              */
             dock placed() foreach(s => {
-                val view = ship(s size, s orientation)
-                val realPoint = realCoords(s point)
-                val rect = new Rectangle(realPoint, view.rectangle size)
+                val rect = s rect
                 
                 if (rect contains(point)) {
                     dock onShipClick(s.point.x, s.point.y)
+                    result = true
                     break
                 }
             })
         }
+        
+        return result
     }
 }
