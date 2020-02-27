@@ -8,9 +8,9 @@ package org.battleshipgame.render
  * @since 2.0.0
  */
 trait InputListener {
-    def onKeyPress(key: Int): Unit
-    def onMouseMove(x: Int, y: Int): Unit
-    def onMouseUp(x: Int, y: Int): Unit
-    def onMouseDown(x: Int, y: Int): Unit
-    def onClick(x: Int, y: Int): Unit
+    def onKeyPress(key: Int): Boolean
+    def onMouseMove(x: Int, y: Int): Boolean
+    def onMouseUp(x: Int, y: Int): Boolean
+    def onMouseDown(x: Int, y: Int): Boolean
+    def onClick(x: Int, y: Int): Boolean
 }
