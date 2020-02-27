@@ -11,7 +11,7 @@ import org.battleshipgame.render.{Screen, TextView, Button, ImageView}
  * @version 1.0
  * @since 2.0.0
  */
-trait ConnectionScreen extends Screen {
+abstract class ConnectionScreen extends Screen {
     def buttons(): Array[Button]
     def backImage(): ImageView
     def backLabel(): TextView
