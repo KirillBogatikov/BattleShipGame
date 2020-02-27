@@ -15,7 +15,16 @@ import org.battleshipgame.ui.ShipOrientation.HORIZONTAL
  * @version 1.0
  * @since 2.0.0
  */
-case class Ship(val size: ShipSize, val point: Point, val orientation: ShipOrientation) { 
+case class Ship(val size: ShipSize, val point: Point, val orientation: ShipOrientation) {
+    private var totalDamage: Int = 0
+    private var damaged: Array[Point] = Array()
+    
+    def damage(point: Point): Int = {
+        damaged(totalDamage) = point
+        totalDamage += 1
+        return totalDamage
+    }
+    
     def area(): Rectangle = {
         var w = 0
         var h = 0

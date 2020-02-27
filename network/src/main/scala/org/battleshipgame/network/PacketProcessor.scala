@@ -8,6 +8,7 @@ import org.battleshipgame.network.EndGame.LOSE
 import org.battleshipgame.network.EndGame.WIN
 import org.battleshipgame.network.Shot.SHOT
 import org.battleshipgame.network.ShotParser.parse
+import org.battleshipgame.network.ShotResult._
 import org.cuba.log.Log
 
 class PacketProcessor(
@@ -38,6 +39,9 @@ class PacketProcessor(
                     var responsePacket = new Packet(packet hash, result toString, null)
                     networker send(responsePacket)
                 }
+                case "HURT" => listener.onShotResult(HURT)
+                case "KILL" => listener.onShotResult(KILL)
+                case "MISS" => listener.onShotResult(MISS)
             }
         }
     }

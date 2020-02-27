@@ -5,5 +5,5 @@ trait EventListener {
     def onConnectedToFriend(): Unit
     def onShot(x: Int, y: Int): ShotResult
     def onGameEnd(win: Boolean): Unit
-    def onShotResult(result: String): Unit
+    def onShotResult(result: ShotResult): Unit
 }
