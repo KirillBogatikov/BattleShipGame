@@ -1,6 +1,6 @@
 package org.battleshipgame.render
 
-import org.battleshipgame.ui.ShipSize
+import org.battleshipgame.ui.{ShipSize, ShipOrientation}
 
 /**
  * Платформа, дай стили (цвета, размеры) и картинки
@@ -14,6 +14,21 @@ trait StylesResolver {
      * Фоновое изображение для каждого экрана
      */
     def background(): Image
+    
+    /**
+     * Изображение огня
+     */
+    def flame(): Image
+    
+    /**
+     * Изображение обломков
+     */
+    def wreck(): Image
+    
+    /**
+     * Изображение промаха
+     */
+    def miss(): Image
         
     /**
      * Цвет кнопки по умолчанию
@@ -66,4 +81,9 @@ trait StylesResolver {
      * Толщина линии
      */
     def strokeSize(): Int
+    
+    /**
+     * Дай кораблик по размеру и ориентации
+     */
+    def ship(size: ShipSize, orientation: ShipOrientation): Image
 }
