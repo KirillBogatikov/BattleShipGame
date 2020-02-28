@@ -21,6 +21,10 @@ public class SwingImage implements Image {
 		image = ImageIO.read(imageSteam);
 	}
 	
+	public SwingImage(BufferedImage image) {
+		this.image = image;
+	}
+	
 	public BufferedImage getContent() {
 		return image;
 	}
