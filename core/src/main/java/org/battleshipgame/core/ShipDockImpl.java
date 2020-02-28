@@ -3,9 +3,9 @@ package org.battleshipgame.core;
 import java.util.List;
 import java.util.Optional;
 
-import org.battleshipgame.Ship;
 import org.battleshipgame.render.Point;
 import org.battleshipgame.render.Rectangle;
+import org.battleshipgame.ui.Ship;
 import org.battleshipgame.ui.ShipOrientation;
 import org.battleshipgame.ui.ShipSize;
 import org.battleshipgame.ui.ShipsDock;
