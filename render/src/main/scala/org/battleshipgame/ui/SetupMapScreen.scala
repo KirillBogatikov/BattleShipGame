@@ -1,11 +1,9 @@
 package org.battleshipgame.ui
 
 import scala.language.postfixOps
-
 import org.battleshipgame.render.{Point, Rectangle, Screen, ImageView, TextView, Button, MapGridView, View}
 import org.battleshipgame.ui.ShipOrientation._
 import scala.util.control.Breaks
-import org.battleshipgame.Ship
 
 /**
  * Док кораблей, этакий мэнэджэр

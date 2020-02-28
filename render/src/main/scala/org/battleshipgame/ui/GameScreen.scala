@@ -2,7 +2,6 @@ package org.battleshipgame.ui
 
 import scala.language.postfixOps
 import org.battleshipgame.render.{Screen, Point, Rectangle, MapGridView}
-import org.battleshipgame.Ship
 import org.battleshipgame.render.Size
 import org.battleshipgame.render.Image
 

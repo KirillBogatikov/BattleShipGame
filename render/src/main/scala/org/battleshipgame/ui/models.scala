@@ -1,9 +1,7 @@
-package org.battleshipgame
+package org.battleshipgame.ui
 
 import org.battleshipgame.render.{Point, Rectangle}
 import org.battleshipgame.ui.ShipOrientation.HORIZONTAL
-import org.battleshipgame.ui.ShipOrientation
-import org.battleshipgame.ui.ShipSize
 
 /**
  * Кораблик:
