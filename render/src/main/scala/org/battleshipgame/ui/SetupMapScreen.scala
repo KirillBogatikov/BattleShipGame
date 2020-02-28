@@ -63,7 +63,7 @@ abstract class ShipsDock {
  * @version 1.3
  * @since 2.0.0
  */
-trait SetupMapScreen extends Screen {
+abstract class SetupMapScreen extends Screen {
     /**
      * Платформа, дай док
      */
