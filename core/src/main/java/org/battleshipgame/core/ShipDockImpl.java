@@ -3,17 +3,22 @@ package org.battleshipgame.core;
 import java.util.List;
 import java.util.Optional;
 
+import org.battleshipgame.Ship;
 import org.battleshipgame.render.Point;
 import org.battleshipgame.render.Rectangle;
-import org.battleshipgame.ui.Ship;
 import org.battleshipgame.ui.ShipOrientation;
 import org.battleshipgame.ui.ShipSize;
 import org.battleshipgame.ui.ShipsDock;
 
 public class ShipDockImpl extends ShipsDock {
+	private Ship draggedShip;
 	private List<Ship> placedShips;
 	private List<Ship> leftShips;
 	private Rectangle invalid;
+	
+	public void setOrientation(ShipOrientation orientation) {
+		leftShips.forEach(ship -> ship.orientation_$eq(orientation));
+	}
 	
 	@Override
 	public Ship[] left() {
@@ -24,10 +29,19 @@ public class ShipDockImpl extends ShipsDock {
 	public Ship[] placed() {
 		return placedShips.toArray(new Ship[0]);
 	}
+	
+	@Override
+	public Ship draggedShip() {
+		return draggedShip;
+	}
+	
+	public void dropShip() {
+		draggedShip = null;
+	}
 
 	@Override
-	public void onShipDrag(ShipSize ship, ShipOrientation orientation) {
-		
+	public void onShipDrag(ShipSize size, ShipOrientation orientation) {
+		draggedShip = new Ship(size, new Point(0, 0), orientation);
 	}
 
 	@Override
@@ -38,7 +52,8 @@ public class ShipDockImpl extends ShipsDock {
 		if(o.isPresent()) {
 			invalid = o.get().area();
 		} else {
-			placedShips.add(new Ship(draggedShip(), point, orientation()));
+			placedShips.add(draggedShip());
+			dropShip();
 		}
 	}
 
