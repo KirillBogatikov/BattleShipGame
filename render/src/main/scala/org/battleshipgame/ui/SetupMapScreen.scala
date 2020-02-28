@@ -2,9 +2,56 @@ package org.battleshipgame.ui
 
 import scala.language.postfixOps
 
-import org.battleshipgame.render.{Point, Rectangle, Screen, ImageView, TextView, Button, MapGridView}
+import org.battleshipgame.render.{Point, Rectangle, Screen, ImageView, TextView, Button, MapGridView, View}
 import org.battleshipgame.ui.ShipOrientation._
 import scala.util.control.Breaks
+import org.battleshipgame.Ship
+
+/**
+ * Док кораблей, этакий мэнэджэр
+ * 
+ * @author Кирилл Испольнов
+ * @version 1.0
+ * @since 2.0.0
+ */
+abstract class ShipsDock {    
+    /**
+     * Кораблик, который сейчас тащит юзер
+     */
+    var draggedShip: Ship = null
+    
+    /**
+     * Оставшиеся (не расставленные) кораблики
+     */
+    def left(): Array[Ship]
+    
+    /**
+     * Раставленные кораблики
+     */
+    def placed(): Array[Ship]
+    
+    /**
+     * Если юзер взял кораблик
+     */
+    def onShipDrag(ship: ShipSize, orientation: ShipOrientation): Unit
+    
+    /**
+     * Если юзер поставил кораблик
+     */
+    def onShipDrop(x: Int, y: Int): Unit
+    
+    /**
+     * Если юзер ткнул в кораблик
+     */
+    def onShipClick(x: Int, y: Int): Unit
+    
+    /**
+     * Дай зону ошибки
+     * 
+     * Не инвалид, а прямоугольник с ограниченными возможностями (с)
+     */
+    def invalid(): Rectangle
+}
 
 /**
  * Экран расставления корабликов
@@ -23,27 +70,7 @@ trait SetupMapScreen extends Screen {
      * Дай кнопочку "Начать игру"
      */
     def start(): Button
-    
-    /**
-     * Дай кнопочку "Повернуть"
-     */
-    def rotateImage(): ImageView
-    
-    /**
-     * Дай текст к кнопочке "Повернуть"
-     */
-    def rotateLabel(): TextView
-    
-    /**
-     * Дай кнопочку "Назад"
-     */
-    def backImage(): ImageView
-    
-    /**
-     * Дай текст к кнопочке "Назад"
-     */
-    def backLabel(): TextView
-    
+        
     /**
      * Дай сетку поля
      */
@@ -52,20 +79,18 @@ trait SetupMapScreen extends Screen {
     /**
      * Дай кораблик по размеру и ориентации
      */
-    def ship(size: ShipSize, orientation: ShipOrientation): ImageView
+    def ship(size: ShipSize, orientation: ShipOrientation): View
             
     override def render(): Unit = {
+        super.render()
+        
         renderer begin()
-        
-        background()
-        
-        renderer image(rotateImage rectangle, rotateImage image)
-        label(rotateLabel)
         
         var canStart = dock.left().length == 0
         dock left() foreach(s => {
             val view = ship(s size, s orientation) 
-            renderer image(view rectangle, view image)
+            val img = styles ship(s size, s orientation)
+            renderer image(view rectangle, img)
         })
         
         if (canStart) {
@@ -75,12 +100,14 @@ trait SetupMapScreen extends Screen {
         grid(grid)
         
         dock placed() foreach(s => {
-            val view = ship(s size, s orientation)
-            var gridRect = grid rectangle
+            val img = styles ship(s size, s orientation)
                         
-            val rect = new Rectangle(s point, view.rectangle size)
+            val point = grid toPixelCoords(s.rect point)
+            val size = grid toPixelSize(s.rect size)
+            
+            val rect = new Rectangle(point, size)
                            
-            renderer image(rect, view image)
+            renderer image(rect, img)
         })
         
         if (dock.invalid != null) {
@@ -94,6 +121,17 @@ trait SetupMapScreen extends Screen {
         renderer end()
     }
     
+    override def onMouseMove(x: Int, y: Int): Boolean = {
+        val result = super.onMouseMove(x, y)
+        val hasDragged = dock.draggedShip != null
+        
+        if (hasDragged) {
+            dock.draggedShip.point = new Point(x, y)   
+        }        
+        
+        return result || hasDragged
+    }
+    
     /**
      * Чекаем, может юзер начал тащить кораблик (drag'n'drop)
      */
@@ -104,8 +142,8 @@ trait SetupMapScreen extends Screen {
         dock left() foreach(s => {
             val view = ship(s size, s orientation)
             if(view.rectangle contains(point)) {
-                dock draggedShip = s.size
-                dock orientation = s.orientation
+                s.point = view.rectangle.point
+                dock draggedShip = s
                 result = true
             }
         })
@@ -121,7 +159,7 @@ trait SetupMapScreen extends Screen {
         
         if (dock.draggedShip != null) {
             if (grid.rectangle.contains(point)) {
-                val gridPoint = gridCoords(point)
+                val gridPoint = grid toGridCoords(point)
                 dock onShipDrop(gridPoint x, gridPoint y)
                 return true
             } else {
@@ -134,33 +172,6 @@ trait SetupMapScreen extends Screen {
         return false
     }
     
-    /**
-     * Пиксельные координаты -> координаты сетки
-     */
-    private def gridCoords(pixel: Point): Point = {
-        val gridRect = grid rectangle
-        
-        val ox = gridRect.x - pixel.x;
-        val oy = gridRect.y - pixel.y
-        
-        val i = ox / grid.cellSize
-        var j = oy / grid.cellSize
-        
-        return new Point(i, j)
-    }
-    
-    /**
-     * Координаты сетки -> пиксельные координаты
-     */
-    private def realCoords(point: Point): Point = {
-        val gridRect = grid rectangle
-        
-        val x = point.x * grid.cellSize
-        var y = point.y * grid.cellSize
-        
-        return new Point(x, y)
-    }
-    
     override def onClick(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         
@@ -169,26 +180,6 @@ trait SetupMapScreen extends Screen {
          */
         if (start.rectangle contains(point)) {
             start.listener onClick()
-            return true
-        }
-        
-        /*
-         * Проверяем кнопку Повернуть
-         */
-        if (rotateImage.rectangle.contains(point) || rotateLabel.rectangle.contains(point)) {
-            if (dock.orientation == HORIZONTAL) {
-                dock orientation = VERTICAL
-            } else {
-                dock orientation = HORIZONTAL
-            }
-            return true
-        }
-        
-        /*
-         * Проверяем кнопку Назад
-         */
-        if (backImage.rectangle.contains(point) || backLabel.rectangle.contains(point)) {
-            backImage.listener onClick()
             return true
         }
         
