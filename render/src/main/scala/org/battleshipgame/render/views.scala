@@ -73,4 +73,37 @@ trait ShotListener {
  * @version 1.0
  * @since 2.0.0
  */
-class MapGridView(rectangle: Rectangle, var cellSize: Int, var listener: ShotListener) extends View(rectangle) { }
+class MapGridView(rectangle: Rectangle, var cellSize: Int, var listener: ShotListener) extends View(rectangle) {
+    def toGridCoords(pixel: Point): Point = {
+        val gridRect = rectangle
+        
+        val ox = gridRect.x - pixel.x;
+        val oy = gridRect.y - pixel.y
+        
+        val i = ox / cellSize
+        var j = oy / cellSize
+        
+        return new Point(i, j)
+    }
+    
+    def toPixelCoords(grid: Point): Point = {
+        val x = grid.x * cellSize
+        var y = grid.y * cellSize
+        
+        return new Point(x, y)
+    }
+    
+    def toGridSize(pixel: Size): Size = {
+        val i = pixel.width / cellSize
+        var j = pixel.height / cellSize
+        
+        return new Size(i, j)
+    }
+    
+    def toPixelSize(grid: Size): Size = {
+        val w = grid.width * cellSize
+        var h = grid.height * cellSize 
+        
+        return new Size(w, h)
+    }
+}
