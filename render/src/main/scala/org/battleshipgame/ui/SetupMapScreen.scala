@@ -18,7 +18,12 @@ abstract class ShipsDock {
     /**
      * Кораблик, который сейчас тащит юзер
      */
-    var draggedShip: Ship = null
+    def draggedShip(): Ship
+    
+    /**
+     * Выкинь каку
+     */
+    def dropShip(): Unit
     
     /**
      * Оставшиеся (не расставленные) кораблики
@@ -143,7 +148,7 @@ trait SetupMapScreen extends Screen {
             val view = ship(s size, s orientation)
             if(view.rectangle contains(point)) {
                 s.point = view.rectangle.point
-                dock draggedShip = s
+                dock onShipDrag(s size, s orientation)
                 result = true
             }
         })
@@ -164,7 +169,7 @@ trait SetupMapScreen extends Screen {
                 return true
             } else {
                 //нельзя бросать кораблики где попало
-                dock draggedShip = null
+                dock dropShip()
                 return true
             }
         }

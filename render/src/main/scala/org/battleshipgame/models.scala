@@ -17,7 +17,7 @@ import org.battleshipgame.ui.ShipSize
  * @version 1.0
  * @since 2.0.0
  */
-case class Ship(val size: ShipSize, var point: Point, val orientation: ShipOrientation) {
+case class Ship(val size: ShipSize, var point: Point, var orientation: ShipOrientation) {
     var totalDamage: Int = 0
     var damaged: Array[Point] = Array()
     
