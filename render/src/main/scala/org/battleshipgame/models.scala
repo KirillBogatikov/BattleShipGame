@@ -1,7 +1,9 @@
-package org.battleshipgame.ui
+package org.battleshipgame
 
 import org.battleshipgame.render.{Point, Rectangle}
 import org.battleshipgame.ui.ShipOrientation.HORIZONTAL
+import org.battleshipgame.ui.ShipOrientation
+import org.battleshipgame.ui.ShipSize
 
 /**
  * Кораблик:
@@ -15,9 +17,9 @@ import org.battleshipgame.ui.ShipOrientation.HORIZONTAL
  * @version 1.0
  * @since 2.0.0
  */
-case class Ship(val size: ShipSize, val point: Point, val orientation: ShipOrientation) {
-    private var totalDamage: Int = 0
-    private var damaged: Array[Point] = Array()
+case class Ship(val size: ShipSize, var point: Point, val orientation: ShipOrientation) {
+    var totalDamage: Int = 0
+    var damaged: Array[Point] = Array()
     
     def damage(point: Point): Int = {
         damaged(totalDamage) = point
