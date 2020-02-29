@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.battleshipgame.render.Point;
 import org.battleshipgame.render.Rectangle;
+import org.battleshipgame.render.Size;
 import org.battleshipgame.ui.Ship;
 import org.battleshipgame.ui.ShipOrientation;
 import org.battleshipgame.ui.ShipSize;
@@ -17,10 +18,10 @@ public class ShipDockImpl extends ShipsDock {
 	private List<Ship> leftShips;
 	private Rectangle invalid;
 	private ShipOrientation orientation;
+	private RenderListener listener;
 	
-	public ShipDockImpl() {
+	public ShipDockImpl(RenderListener listener) {
 		placedShips = new ArrayList<>();
-		placedShips.add(new Ship(ShipSize.WARSHIP, new Point(1, 1), ShipOrientation.VERTICAL));
 		leftShips = new ArrayList<>();
 		
 		for(ShipSize size : ShipSize.values()) {
@@ -30,6 +31,7 @@ public class ShipDockImpl extends ShipsDock {
 		}
 		
 		orientation = ShipOrientation.HORIZONTAL;
+		this.listener = listener;
 	}
 	
 	public void switchOrientation() {
@@ -70,24 +72,41 @@ public class ShipDockImpl extends ShipsDock {
 	}
 
 	@Override
-	public void onShipDrag(ShipSize size, ShipOrientation orientation) {
-		draggedShip = new Ship(size, new Point(0, 0), orientation);
+	public void onShipDrag(Ship ship) {
+		draggedShip = ship;
 	}
 
 	@Override
 	public void onShipDrop(int x, int y) {
-		Point point = new Point(x, y);
-		Optional<Ship> o = placedShips.stream().filter(s -> s.area().contains(point)).findFirst();
-		
-		if(o.isPresent()) {
-			invalid = o.get().area();
+		Size size = draggedShip.rect().size();
+				
+		if(x + size.width() > 10 || y + size.height() > 10) {
+			invalid = new Rectangle(0, 0, 10, 10);
 		} else {
-			Ship dragged = draggedShip();
-			placedShips.add(new Ship(dragged.size(), new Point(x, y), dragged.orientation()));
-			Optional<Ship> option = leftShips.stream().filter(ship -> ship.size().equals(dragged.size())).findFirst();
-			leftShips.remove(option.get());
+			Optional<Ship> o = placedShips.stream().filter(s -> checkIntersects(s, size, x, y)).findFirst();
+				
+			if(o.isPresent()) {
+				invalid = o.get().area();
+			} else {
+				Ship dragged = draggedShip();
+				placedShips.add(new Ship(dragged.size(), new Point(x, y), dragged.orientation()));
+				Optional<Ship> option = leftShips.stream().filter(ship -> ship.size().equals(dragged.size())).findFirst();
+				leftShips.remove(option.get());
+			}
 		}
 		dropShip();
+	}
+	
+	private boolean checkIntersects(Ship ship, Size size, int x, int y) {
+		Rectangle area = ship.area();
+		for(int i = 0; i < size.width(); i++) {
+			for(int j = 0; j < size.height(); j++) {
+				if(area.contains(new Point(x  + i, y + j))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -104,6 +123,17 @@ public class ShipDockImpl extends ShipsDock {
 
 	@Override
 	public Rectangle invalid() {
+		if(invalid != null) {
+			Thread timeout = new Thread(() -> {
+				try {
+					Thread.sleep(3000L);
+					listener.needRender();
+				} catch (InterruptedException e) { }
+				invalid = null;
+			});
+			timeout.start();
+		}
+		
 		return invalid;
 	}
 
