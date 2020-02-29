@@ -102,16 +102,14 @@ abstract class SetupMapScreen extends Screen {
         
         grid(grid)
         
-        dock placed() foreach(s => {
+        dock placed() foreach(renderShip)
+        
+        if (dock.draggedShip != null) {
+            val s = dock.draggedShip
             val img = styles ship(s size, s orientation)
-                        
-            val point = grid toPixelCoords(s.rect point)
             val size = grid toPixelSize(s.rect size)
-            
-            val rect = new Rectangle(point, size)
-                           
-            renderer image(rect, img)
-        })
+            renderer image(new Rectangle(s point, size), img)
+        }
         
         if (dock.invalid != null) {
             renderer fill(true)
@@ -122,6 +120,19 @@ abstract class SetupMapScreen extends Screen {
         }
             
         renderer end()
+    }
+    
+    private def renderShip(s: Ship): Unit = {
+        val img = styles ship(s size, s orientation)
+                        
+        val point = grid toPixelCoords(s.rect point)
+        point.x += grid.rectangle.x 
+        val size = grid toPixelSize(s.rect size)
+        point.y += grid.rectangle.y 
+        
+        val rect = new Rectangle(point, size)
+                       
+        renderer image(rect, img)
     }
     
     override def onMouseMove(x: Int, y: Int): Boolean = {
@@ -139,8 +150,8 @@ abstract class SetupMapScreen extends Screen {
      * Чекаем, может юзер начал тащить кораблик (drag'n'drop)
      */
     override def onMouseDown(x: Int, y: Int): Boolean = {
+        var result = super.onMouseDown(x, y)
         val point = new Point(x, y)
-        var result = false
         
         dock left() foreach(s => {
             val view = ship(s size, s orientation)
@@ -158,6 +169,7 @@ abstract class SetupMapScreen extends Screen {
      * Чекаем, может бросил кораблик (drag'n'drop)
      */
     override def onMouseUp(x: Int, y: Int): Boolean = {
+        var result = super.onMouseDown(x, y)
         val point = new Point(x, y)
         
         if (dock.draggedShip != null) {
@@ -172,10 +184,14 @@ abstract class SetupMapScreen extends Screen {
             }
         }
         
-        return false
+        return result
     }
     
     override def onClick(x: Int, y: Int): Boolean = {
+        if (super.onClick(x, y)) {
+            return true;
+        }
+        
         val point = new Point(x, y)
         
         /*

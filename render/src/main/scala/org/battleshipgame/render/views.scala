@@ -62,10 +62,6 @@ class ImageView(rectangle: Rectangle, var image: Image, var listener: ClickListe
         this(new Rectangle(x, y, w, h), image, () => {})
 }
 
-trait ShotListener {
-    def onShot(x: Int, y: Int): Unit
-}
-
 /**
  * МэпГридВью - сетка игрового поля
  * 
@@ -73,12 +69,14 @@ trait ShotListener {
  * @version 1.0
  * @since 2.0.0
  */
-class MapGridView(rectangle: Rectangle, var cellSize: Int, var listener: ShotListener) extends View(rectangle) {
+class MapGridView(rectangle: Rectangle, var cellSize: Int) extends View(rectangle) {
+    def this(x: Int, y: Int, width: Int, height: Int, styles: StylesResolver) = this(new Rectangle(x, y, width, height), (width) / 10)
+    
     def toGridCoords(pixel: Point): Point = {
         val gridRect = rectangle
         
-        val ox = gridRect.x - pixel.x;
-        val oy = gridRect.y - pixel.y
+        val ox = pixel.x - gridRect.x
+        val oy = pixel.y - gridRect.y
         
         val i = ox / cellSize
         var j = oy / cellSize

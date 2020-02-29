@@ -87,8 +87,7 @@ trait Screen extends InputListener {
         renderer stroke(true)
         renderer stroke(styles strokeSize)
         
-        val bg = alpha(styles inputBackground, 64) //25%
-        renderer fill(bg)
+        renderer fill(styles inputBackground)
         renderer stroke(styles linesColor)
         renderer text(styles textColor)
         
@@ -101,18 +100,21 @@ trait Screen extends InputListener {
      */
     protected def grid(grid: MapGridView): Unit = {
         val rect = grid rectangle
-        val cellSize = (rect.width - styles.strokeSize * 11) / 10 + styles.strokeSize
         
         renderer fill(true)
         renderer stroke(true)
         
+        renderer fill(styles inputBackground)
+        renderer stroke(styles buttonDefault)
+        renderer stroke(styles strokeSize)
+        
         renderer rectangle(rect)
         
-        for(i <- 1 until 10) {
-            var x = rect.x + i * cellSize
+        for(i <- 1 until 10) {            
+            var x = rect.x + i * grid.cellSize
             renderer line(x, rect.y, x, rect.y + rect.height)
             
-            var y = rect.y + i * cellSize
+            var y = rect.y + i * grid.cellSize
             renderer line(rect.x, y, rect.x + rect.height, y)
         }
     }
