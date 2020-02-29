@@ -70,14 +70,17 @@ public class Launcher  {
 	}
 	
 	private void showSinglePlayScreen() {
-		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), styles, renderer);
+		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), frame::repaint, styles, renderer);
 		mapScreen.setClickListeners(() -> {
-			
+			 
 		}, this::showConnectionScreen, () -> {
-			System.out.println("R");
 			frame.repaint();
 		});
 		setScreen(mapScreen);
+	}
+	
+	private void showGameScreen() {
+		
 	}
 	
 	private void setScreen(Screen screen) {
