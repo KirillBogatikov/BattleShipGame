@@ -96,7 +96,7 @@ public class DesktopStylesResolver implements StylesResolver {
 
 	@Override
 	public long highlightBackground() {
-		return 0xFFFF0000;
+		return 0x407F0000;
 	}
 
 	@Override
