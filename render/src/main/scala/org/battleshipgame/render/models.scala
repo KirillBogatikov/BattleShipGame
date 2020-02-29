@@ -62,7 +62,7 @@ class Rectangle(var x: Int, var y: Int,
      */
     def contains(point: Point): Boolean = {
         return point.x >= x && point.y >= y &&
-               point.x <= x + width && point.y <= y + height
+               point.x < x + width && point.y < y + height
     }
 }
 

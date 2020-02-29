@@ -58,6 +58,8 @@ abstract class GameScreen extends Screen {
     
     private def renderShip(ship: Ship, view: MapGridView): Unit = {
         val point = view toPixelCoords(ship point)
+        point.x += view.rectangle.x
+        point.y += view.rectangle.y
         val size = view toPixelSize(ship.rect() size)
         val img = styles ship(ship size, ship orientation)
         

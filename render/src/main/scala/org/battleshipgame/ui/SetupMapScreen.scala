@@ -1,9 +1,14 @@
 package org.battleshipgame.ui
 
 import scala.language.postfixOps
-import org.battleshipgame.render.{Point, Rectangle, Screen, ImageView, TextView, Button, MapGridView, View}
-import org.battleshipgame.ui.ShipOrientation._
 import scala.util.control.Breaks
+
+import org.battleshipgame.render.Button
+import org.battleshipgame.render.MapGridView
+import org.battleshipgame.render.Point
+import org.battleshipgame.render.Rectangle
+import org.battleshipgame.render.Screen
+import org.battleshipgame.render.View
 
 /**
  * Док кораблей, этакий мэнэджэр
@@ -36,7 +41,7 @@ abstract class ShipsDock {
     /**
      * Если юзер взял кораблик
      */
-    def onShipDrag(ship: ShipSize, orientation: ShipOrientation): Unit
+    def onShipDrag(ship: Ship): Unit
     
     /**
      * Если юзер поставил кораблик
@@ -83,24 +88,39 @@ abstract class SetupMapScreen extends Screen {
      * Дай кораблик по размеру и ориентации
      */
     def ship(size: ShipSize, orientation: ShipOrientation): View
+    
+    override def buttons(): Array[Button] = {
+        var array: Array[Button] = Array()
+        if(dock.left().length == 0)
+            array = array :+ start
+        
+        return array
+    }
             
     override def render(): Unit = {
         super.render()
         
         renderer begin()
         
-        var canStart = dock.left().length == 0
         dock left() foreach(s => {
             val view = ship(s size, s orientation) 
             val img = styles ship(s size, s orientation)
             renderer image(view rectangle, img)
         })
-        
-        if (canStart) {
-            button(start)
-        }
-        
+                
         grid(grid)
+        
+        if (dock.invalid != null) {
+            renderer fill(true)
+            renderer stroke(true)
+            renderer fill(styles highlightBackground)
+            renderer stroke(styles highlightStroke)
+            val point = grid toPixelCoords(dock.invalid point)
+            point.x += grid.rectangle.x 
+            point.y += grid.rectangle.y 
+            val size = grid toPixelSize(dock.invalid size) 
+            renderer rectangle(new Rectangle(point, size))
+        }
         
         dock placed() foreach(renderShip)
         
@@ -108,15 +128,11 @@ abstract class SetupMapScreen extends Screen {
             val s = dock.draggedShip
             val img = styles ship(s size, s orientation)
             val size = grid toPixelSize(s.rect size)
-            renderer image(new Rectangle(s point, size), img)
-        }
-        
-        if (dock.invalid != null) {
-            renderer fill(true)
-            renderer stroke(true)
-            renderer fill(styles highlightBackground)
-            renderer stroke(styles highlightStroke)
-            renderer rectangle(dock invalid)
+            val min = Math min(size width, size height)
+            
+            val point = new Point(s.point.x - min / 2, s.point.y - min / 2)
+            
+            renderer image(new Rectangle(point, size), img)
         }
             
         renderer end()
@@ -136,12 +152,13 @@ abstract class SetupMapScreen extends Screen {
     }
     
     override def onMouseMove(x: Int, y: Int): Boolean = {
+        val point = new Point(x, y);
         val result = super.onMouseMove(x, y)
         val hasDragged = dock.draggedShip != null
         
         if (hasDragged) {
-            dock.draggedShip.point = new Point(x, y)   
-        }        
+            dock.draggedShip.point = point   
+        }
         
         return result || hasDragged
     }
@@ -156,8 +173,8 @@ abstract class SetupMapScreen extends Screen {
         dock left() foreach(s => {
             val view = ship(s size, s orientation)
             if(view.rectangle contains(point)) {
-                s.point = view.rectangle.point
-                dock onShipDrag(s size, s orientation)
+                s.point = point
+                dock onShipDrag(s)
                 result = true
             }
         })
@@ -195,30 +212,23 @@ abstract class SetupMapScreen extends Screen {
         val point = new Point(x, y)
         
         /*
-         * Проверяем кнопку Начать игру
-         */
-        if (start.rectangle contains(point)) {
-            start.listener onClick()
-            return true
-        }
-        
-        /*
          * в Scala нет break. Просто раз - и нет
          * но есть расширение Breaks (делает то же самое и даже чуточку больше) :D
          */
         var result: Boolean = false
         val mybreaks = new Breaks()
-        import mybreaks.{break, breakable}
+        import mybreaks.{ break, breakable }
         
         breakable {
             /*
              * Проверяем кораблики
              */
+            val coords = grid toGridCoords(point)
             dock placed() foreach(s => {
                 val rect = s rect
                 
-                if (rect contains(point)) {
-                    dock onShipClick(s.point.x, s.point.y)
+                if (rect contains(coords)) {
+                    dock onShipClick(coords.x, coords.y)
                     result = true
                     break
                 }
