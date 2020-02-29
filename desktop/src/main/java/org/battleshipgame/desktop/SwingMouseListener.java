@@ -26,7 +26,13 @@ public class SwingMouseListener implements MouseListener, MouseMotionListener {
 	}
 	
 	@Override
-	public void mouseDragged(MouseEvent e) { }
+	public void mouseDragged(MouseEvent e) {
+		synchronized(mutex) {
+			if(screen.onMouseMove(e.getX(), e.getY())) {
+				frame.repaint();
+			}
+		}
+	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {

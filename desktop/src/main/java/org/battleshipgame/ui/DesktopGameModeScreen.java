@@ -15,6 +15,7 @@ public class DesktopGameModeScreen extends GameModeScreen {
 	private Button singleplay, multiplayer;
 	private ImageView backView;
 	private TextView backLabel;
+	private TextView screenLabel;
 	
 	public DesktopGameModeScreen(Image backImage, StylesResolver styles, Renderer renderer) {
 		this.styles = styles;
@@ -24,6 +25,7 @@ public class DesktopGameModeScreen extends GameModeScreen {
 		multiplayer = new Button(526, 170, 200, 200, 20, "СЕТЕВАЯ\nИГРА", 24.0);
 		backView = new ImageView(25, 50, 50, 50, backImage);
 		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, true);
+		screenLabel = new TextView(280, 50, 400, 50, "ВЫБЕРИТЕ РЕЖИМ ИГРЫ", 24.0, true);
 	}
 	
 	public void setClickListeners(ClickListener singleplay, ClickListener multiplayer, ClickListener back) {
@@ -60,7 +62,7 @@ public class DesktopGameModeScreen extends GameModeScreen {
 	
 	@Override
 	public TextView[] labels() {
-		return new TextView[] { backLabel };
+		return new TextView[] { backLabel, screenLabel };
 	}
 
 }

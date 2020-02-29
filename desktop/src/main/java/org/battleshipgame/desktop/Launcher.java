@@ -12,6 +12,7 @@ import org.battleshipgame.render.Screen;
 import org.battleshipgame.render.StylesResolver;
 import org.battleshipgame.ui.DesktopConnectionScreen;
 import org.battleshipgame.ui.DesktopGameModeScreen;
+import org.battleshipgame.ui.DesktopMapScreen;
 import org.battleshipgame.ui.DesktopStartScreen;
 
 public class Launcher  {
@@ -69,7 +70,14 @@ public class Launcher  {
 	}
 	
 	private void showSinglePlayScreen() {
-		
+		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), styles, renderer);
+		mapScreen.setClickListeners(() -> {
+			
+		}, this::showConnectionScreen, () -> {
+			System.out.println("R");
+			frame.repaint();
+		});
+		setScreen(mapScreen);
 	}
 	
 	private void setScreen(Screen screen) {

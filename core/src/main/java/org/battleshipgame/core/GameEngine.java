@@ -5,10 +5,9 @@ import java.util.Optional;
 
 import org.battleshipgame.network.ShotResult;
 import org.battleshipgame.render.Point;
-import org.battleshipgame.render.ShotListener;
 import org.battleshipgame.ui.Ship;
 
-public class GameEngine implements ShotListener, Player {
+public class GameEngine implements Player {
 	private Player friend;
 	private List<Ship> ships;
 	private List<Point> flames;
@@ -24,11 +23,6 @@ public class GameEngine implements ShotListener, Player {
 	
 	public void setFriend(Player player) {
 		this.friend = player;
-	}
-
-	@Override
-	public void onShot(int x, int y) {
-		Point point = new Point(x, y);
 	}
 
 	@Override

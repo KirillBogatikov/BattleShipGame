@@ -25,7 +25,7 @@ public class DesktopStylesResolver implements StylesResolver {
 		this.verticalShips = new Image[horizontalShips.length];
 		
 		for(int i = 0; i < horizontalShips.length; i++) {
-			BufferedImage bufferedImage = SwingUtils.rotate(horizontalShips[i].getContent(), 90.0);
+			BufferedImage bufferedImage = SwingUtils.rotate(horizontalShips[i].getContent());
 			verticalShips[i] = new SwingImage(bufferedImage);
 		}
 	}
@@ -53,8 +53,8 @@ public class DesktopStylesResolver implements StylesResolver {
 	@Override
 	public Image ship(ShipSize size, ShipOrientation orientation) {
 		switch(orientation) {
-			case VERTICAL: return verticalShips[size.toInt() - 1];
-			case HORIZONTAL: return horizontalShips[size.toInt() - 1];
+			case VERTICAL: return verticalShips[4 - size.toInt()];
+			case HORIZONTAL: return horizontalShips[4 -size.toInt()];
 		}
 		return null;
 	}
@@ -91,7 +91,7 @@ public class DesktopStylesResolver implements StylesResolver {
 
 	@Override
 	public long inputBackground() {
-		return buttonPressed();
+		return 0x400D4E99;
 	}
 
 	@Override
