@@ -4,12 +4,32 @@ import scala.language.postfixOps
 import org.battleshipgame.render.{Screen, Point, Rectangle, GridView}
 import org.battleshipgame.render.Size
 import org.battleshipgame.render.Image
+import scala.collection.mutable.Buffer
 
-trait Bay {
-    def ships(): Array[Ship] = Array()
-    def wrecks(): Array[Point] = Array()
-    def flames(): Array[Point]
-    def misses(): Array[Point]
+abstract class Bay(var ships: Array[Ship] = Array(),
+          var wrecks: Array[Point] = Array(),
+          var flames: Array[Point],
+          var misses: Array[Point],
+          var locked: Boolean) {
+    
+    def ship(index: Int): Unit = {
+        var buf = ships.toBuffer
+        buf.remove(index)
+        ships = buf.toArray
+    }
+    
+    def wreck(point: Point): Unit = {
+        wrecks:+ point
+    }
+    
+    def flame(point: Point): Unit = {
+        flames:+ point
+    }
+    
+    def miss(point: Point): Unit = {
+        misses:+ point
+    }
+    
     def onShot(x: Int, y: Int): Unit
 }
 
@@ -37,6 +57,10 @@ abstract class GameScreen extends Screen {
     
     override def onClick(x: Int, y: Int): Boolean = {
         val result = super.onClick(x, y)
+        
+        if (opponentBay locked) {
+            return result
+        }
         
         if (!result) {
             val point = new Point(x, y)
