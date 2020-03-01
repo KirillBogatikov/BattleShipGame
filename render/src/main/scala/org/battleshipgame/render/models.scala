@@ -23,7 +23,6 @@ case class Size(var width: Int, var height: Int) {}
  * <ul>
  * 	<li>координаты левого верхнего угла: x, y, point</li>
  *  <li>размер: width, height, size</li>
- *  <li>радиус скругления углов: cornerRadius, по умолчанию - 0</li>
  * </ul>
  * 
  * @author Кирилл Испольнов
@@ -31,28 +30,16 @@ case class Size(var width: Int, var height: Int) {}
  * @since 2.0.0
  */
 class Rectangle(var x: Int, var y: Int, 
-                var width: Int, var height: Int, 
-                var cornerRadius: Double) {
+                var width: Int, var height: Int) {
     
-    /**
-     * Прямоугольник без закругления углов
-     */
-    def this(x: Int, y: Int, width: Int, height: Int) = 
-        this(x, y, width, height, 0.0)
-        
     /**
      * Прямоугольник с закруглением углов на основе {@link Point точки} и {@link Size размера}
      */
-    def this(point: Point, size: Size, cornerRadius: Double) =
-        this(point.x, point.y, size.width, size.height, cornerRadius)
-        
-    /**
-     * Прямоугольник без закругления углов на основе {@link Point точки} и {@link Size размера}
-     */
     def this(point: Point, size: Size) =
-        this(point, size, 0.0)
-
-    def point(): Point = new Point(x, y)
+        this(point.x, point.y, size.width, size.height)
+   
+    def start(): Point = new Point(x, y)
+    def end(): Point = new Point(x + width, y + height)
     def size(): Size = new Size(width, height)
     
     /**
@@ -75,5 +62,7 @@ class Rectangle(var x: Int, var y: Int,
  * @since 2.0.0
  */
 trait Image {
-    def size(): Size
+    def width(): Int
+    def height(): Int
+    def size(): Size = new Size(width, height)
 }
