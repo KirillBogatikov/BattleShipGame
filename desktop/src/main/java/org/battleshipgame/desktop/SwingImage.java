@@ -8,7 +8,6 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.battleshipgame.render.Image;
-import org.battleshipgame.render.Size;
 
 public class SwingImage implements Image {
 	private BufferedImage image;
@@ -29,15 +28,13 @@ public class SwingImage implements Image {
 		return image;
 	}
 	
-	public int getWidth() {
+	@Override
+	public int width() {
 		return image.getWidth();
 	}
 	
-	public int getHeight() {
+	@Override
+	public int height() {
 		return image.getHeight();
-	}
-	
-	public Size size() {
-		return new Size(image.getWidth(), image.getHeight());
 	}
 }

@@ -24,8 +24,8 @@ public class DesktopGameModeScreen extends GameModeScreen {
 		singleplay = new Button(224, 170, 200, 200, 20, "ОДИНОЧНАЯ\nИГРА", 24.0);
 		multiplayer = new Button(526, 170, 200, 200, 20, "СЕТЕВАЯ\nИГРА", 24.0);
 		backView = new ImageView(25, 50, 50, 50, backImage);
-		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, true);
-		screenLabel = new TextView(280, 50, 400, 50, "ВЫБЕРИТЕ РЕЖИМ ИГРЫ", 24.0, true);
+		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, styles.darkTextColor());
+		screenLabel = new TextView(280, 50, 400, 50, "ВЫБЕРИТЕ РЕЖИМ ИГРЫ", 24.0, styles.darkTextColor());
 	}
 	
 	public void setClickListeners(ClickListener singleplay, ClickListener multiplayer, ClickListener back) {

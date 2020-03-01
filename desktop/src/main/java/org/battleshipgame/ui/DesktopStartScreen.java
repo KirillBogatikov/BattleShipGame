@@ -51,7 +51,7 @@ public class DesktopStartScreen extends StartScreen {
 	
 	@Override
 	public TextView[] labels() {
-		return new TextView[] { new TextView(860, 440, 100, 100, "v. 2.0", 24.0) };
+		return new TextView[] { new TextView(860, 440, 100, 100, "v. 2.0", 24.0, styles.textColor()) };
 	}
 
 }

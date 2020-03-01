@@ -105,37 +105,31 @@ public class SwingRenderer implements Renderer {
 	}
 
 	@Override
-	public void rectangle(Rectangle rect) {
-		int radius = (int) rect.cornerRadius();
+	public void rectangle(Rectangle rect, double radius) {
 		if (current.fill) {
 			fill();
-			g2d.fillRoundRect(rect.x(), rect.y(), rect.width(), rect.height(), radius, radius);
+			g2d.fillRoundRect(rect.x(), rect.y(), rect.width(), rect.height(), (int)radius, (int)radius);
 		}
 		if (current.stroke) {
 			stroke();
-			g2d.drawRoundRect(rect.x(), rect.y(), rect.width(), rect.height(), radius, radius);
+			g2d.drawRoundRect(rect.x(), rect.y(), rect.width(), rect.height(), (int)radius, (int)radius);
 		}
 	}
 
 	@Override
 	public void line(Point start, Point end) {
-		line(start.x(), start.y(), end.x(), end.y());
-	}
-
-	@Override
-	public void line(int sx, int sy, int ex, int ey) {
 		if (current.stroke) {
 			stroke();
-			g2d.drawLine(sx, sy, ex, ey);
+			g2d.drawLine(start.x(), start.y(), end.x(), end.y());
 		}
 	}
-
+	
 	@Override
 	public void image(Rectangle rectangle, Image image) {
 		SwingImage swingImage = (SwingImage) image;
 		g2d.drawImage(swingImage.getContent(), rectangle.x(), rectangle.y(),  
 			rectangle.x() + rectangle.width(), rectangle.y() + rectangle.height(), 
-			0, 0, swingImage.getWidth(), swingImage.getHeight(), null);
+			0, 0, swingImage.width(), swingImage.height(), null);
 	}
 
 	@Override
@@ -164,7 +158,7 @@ public class SwingRenderer implements Renderer {
 	}
 
 	@Override
-	public void shadow(Rectangle rect) {
+	public void shadow(Rectangle rect, double radius) {
 		Paint p = g2d.getPaint();
 		g2d.translate(rect.x(), rect.y());
 		

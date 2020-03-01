@@ -6,20 +6,20 @@ import org.battleshipgame.render.Button;
 import org.battleshipgame.render.ClickListener;
 import org.battleshipgame.render.Image;
 import org.battleshipgame.render.ImageView;
-import org.battleshipgame.render.MapGridView;
+import org.battleshipgame.render.GridView;
 import org.battleshipgame.render.Renderer;
 import org.battleshipgame.render.Size;
 import org.battleshipgame.render.StylesResolver;
 import org.battleshipgame.render.TextView;
 import org.battleshipgame.render.View;
 
-public class DesktopMapScreen extends SetupMapScreen {
+public class DesktopMapScreen extends MapScreen {
 	private ShipDockImpl dock;
 	private StylesResolver styles;
 	private Renderer renderer;
 	private ImageView backView, rotateView;
 	private TextView backLabel, rotateLabel;
-	private MapGridView userGrid;
+	private GridView userGrid;
 	private ImageView[] horizontalShipViews;
 	private ImageView[] verticalShipViews;
 	private Button start;
@@ -31,11 +31,11 @@ public class DesktopMapScreen extends SetupMapScreen {
 		
 		start = new Button(610, 380, 250, 60, 20, "НАЧАТЬ ИГРУ", 24.0);
 		backView = new ImageView(25, 50, 50, 50, backImage);
-		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, true);
+		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, styles.darkTextColor());
 		rotateView = new ImageView(885, 50, 50, 50, rotateImage);
-		rotateLabel = new TextView(720, 50, 150, 50, "ПОВЕРНУТЬ", 24.0, true);
+		rotateLabel = new TextView(720, 50, 150, 50, "ПОВЕРНУТЬ", 24.0, styles.darkTextColor());
 		
-		userGrid = new MapGridView(50, 90, 400, 400, styles);
+		userGrid = new GridView(50, 90, 400, 400);
 		
 		horizontalShipViews = new ImageView[] {
 			new ImageView(654, 120, 160, 40, null),
@@ -102,7 +102,7 @@ public class DesktopMapScreen extends SetupMapScreen {
 	}
 
 	@Override
-	public MapGridView grid() {
+	public GridView grid() {
 		return userGrid;
 	}
 

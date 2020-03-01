@@ -25,9 +25,9 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 		connect = new Button(355, 280, 250, 60, 20, "ПОДКЛЮЧИТЬСЯ", 24.0);
 		create = new Button(355, 360, 250, 60, 20, "СОЗДАТЬ ИГРУ", 24.0);
 		backView = new ImageView(25, 50, 50, 50, backImage);
-		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, true);
-		screenLabel = new TextView(280, 50, 400, 50, "СЕТЕВАЯ ИГРА", 24.0, true);
-		gameId = new TextView(280, 200, 400, 60, 10,  "", 24.0, false);
+		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, styles.darkTextColor());
+		screenLabel = new TextView(280, 50, 400, 50, "СЕТЕВАЯ ИГРА", 24.0, styles.darkTextColor());
+		gameId = new TextView(280, 200, 400, 60, "", 24.0, 20.0);
 	}
 	
 	public void setClickListeners(ClickListener connect, ClickListener create, ClickListener back) {
