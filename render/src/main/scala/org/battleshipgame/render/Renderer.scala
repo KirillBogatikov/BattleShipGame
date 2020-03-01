@@ -51,31 +51,19 @@ trait Renderer {
     /**
      * Отрисовать прямоугольник
      */
-    def rectangle(rectangle: Rectangle): Unit
-    /**
-     * Отрисовать прямоугольник (для ленивых)
-     */
-    def rectangle(vertex: Point, size: Size, cornerRadius: Double = 0.0): Rectangle = {
-        val rect = new Rectangle(vertex x, vertex y, size width, size height, cornerRadius)
-        rectangle(rect)
-        return rect
-    }
+    def rectangle(rectangle: Rectangle, radius: Double): Unit
     
     /**
      * Отрисовать тень прямоугольника
      * 
      * Материал дизайн, что-ли?! (с)
      */
-    def shadow(rectangle: Rectangle): Unit
+    def shadow(rectangle: Rectangle, radius: Double): Unit
     
     /**
      * Отрисовать линию
      */
     def line(start: Point, end: Point): Unit
-    /**
-     * Отрисовать линию (опять для ленивых, да я такой)
-     */
-    def line(sx: Int, sy: Int, ex: Int, ey: Int): Unit
 
     /**
      * Отрисовать изображение
