@@ -1,55 +1,80 @@
 package org.battleshipgame.core;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.battleshipgame.network.ShotResult;
 import org.battleshipgame.render.Point;
+import org.battleshipgame.ui.Bay;	
 import org.battleshipgame.ui.Ship;
 
-public class GameEngine implements Player {
+import scala.util.Random;
+
+public class GameEngine {
 	private Player friend;
-	private List<Ship> ships;
-	private List<Point> flames;
-	private List<Ship> killed; 
+	private Bay playerBay;
+	private Bay friendBay;
+	private Point lastShot;
+	private Random random;
 	
 	public GameEngine() {
-		
+		random = new Random();
 	}
 	
-	public void setShips(List<Ship> ships) {
-		this.ships = ships;
+	public void setPlayerBay(Bay playerBay) {
+		this.playerBay = playerBay;
 	}
 	
-	public void setFriend(Player player) {
-		this.friend = player;
+	public void setFriend(Player friend, Bay friendBay) {
+		this.friend = friend;
+		this.friendBay = friendBay;
 	}
 
-	@Override
-	public ShotResult processShot(Point point) {
-		Optional<Ship> option = ships.stream().filter(ship -> ship.rect().contains(point)).findFirst();
+	public void onShot(Point point) {
+		friendBay.locked_$eq(true);
+		
+		ShotResult result;
+		Stream<Ship> ships = Arrays.stream(playerBay.ships());
+		
+		Optional<Ship> option = ships.filter(ship -> ship.rect().contains(point)).findFirst();
+		
 		if(option.isPresent()) {
 			Ship ship = option.get();
+		
+			playerBay.wreck(point);
+			
+			if(random.nextBoolean()) {
+				playerBay.flame(point);
+			}
+			
 			if(ship.damage(point) == ship.size().toInt()) {
-				ships.remove(ship);
-				return ShotResult.KILL;
+				result = ShotResult.KILL;
 			} else {
-				return ShotResult.HURT;
+				result = ShotResult.HURT;
 			}
 		} else {
-			return ShotResult.MISS;
+			playerBay.miss(point);
+			result = ShotResult.MISS;
 		}
+		friend.lastShot(result);
 	}
 
-	@Override
-	public Point nextShot() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void lastShot(ShotResult result) {
-		// TODO Auto-generated method stub
-		
+	public void onShotResult(ShotResult result) {
+		switch(result) {
+			case MISS: 
+				friendBay.miss(lastShot);
+				friendBay.locked_$eq(true);
+			break;
+			case HURT: case KILL:
+				friendBay.locked_$eq(false);
+				friendBay.wreck(lastShot);
+				
+				if(random.nextBoolean()) {
+					friendBay.flame(lastShot);
+				}
+			break;
+			default:
+		}
 	}
 }
