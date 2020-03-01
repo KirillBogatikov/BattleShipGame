@@ -4,7 +4,7 @@ import scala.language.postfixOps
 import scala.util.control.Breaks
 
 import org.battleshipgame.render.Button
-import org.battleshipgame.render.MapGridView
+import org.battleshipgame.render.GridView
 import org.battleshipgame.render.Point
 import org.battleshipgame.render.Rectangle
 import org.battleshipgame.render.Screen
@@ -68,7 +68,7 @@ abstract class ShipsDock {
  * @version 1.3
  * @since 2.0.0
  */
-abstract class SetupMapScreen extends Screen {
+abstract class MapScreen extends Screen {
     /**
      * Платформа, дай док
      */
@@ -82,7 +82,7 @@ abstract class SetupMapScreen extends Screen {
     /**
      * Дай сетку поля
      */
-    def grid(): MapGridView 
+    def grid(): GridView 
     
     /**
      * Дай кораблик по размеру и ориентации
@@ -105,7 +105,7 @@ abstract class SetupMapScreen extends Screen {
         dock left() foreach(s => {
             val view = ship(s size, s orientation) 
             val img = styles ship(s size, s orientation)
-            renderer image(view rectangle, img)
+            renderer image(view bounds, img)
         })
                 
         grid(grid)
@@ -115,11 +115,11 @@ abstract class SetupMapScreen extends Screen {
             renderer stroke(true)
             renderer fill(styles highlightBackground)
             renderer stroke(styles highlightStroke)
-            val point = grid toPixelCoords(dock.invalid point)
-            point.x += grid.rectangle.x 
-            point.y += grid.rectangle.y 
+            val point = grid toPixelCoords(dock.invalid start)
+            point.x += grid.bounds.x 
+            point.y += grid.bounds.y 
             val size = grid toPixelSize(dock.invalid size) 
-            renderer rectangle(new Rectangle(point, size))
+            renderer rectangle(new Rectangle(point, size), 0.0)
         }
         
         dock placed() foreach(renderShip)
@@ -141,10 +141,10 @@ abstract class SetupMapScreen extends Screen {
     private def renderShip(s: Ship): Unit = {
         val img = styles ship(s size, s orientation)
                         
-        val point = grid toPixelCoords(s.rect point)
-        point.x += grid.rectangle.x 
+        val point = grid toPixelCoords(s.rect start)
+        point.x += grid.bounds.x 
         val size = grid toPixelSize(s.rect size)
-        point.y += grid.rectangle.y 
+        point.y += grid.bounds.y 
         
         val rect = new Rectangle(point, size)
                        
@@ -172,7 +172,7 @@ abstract class SetupMapScreen extends Screen {
         
         dock left() foreach(s => {
             val view = ship(s size, s orientation)
-            if(view.rectangle contains(point)) {
+            if(view.bounds contains(point)) {
                 s.point = point
                 dock onShipDrag(s)
                 result = true
@@ -190,7 +190,7 @@ abstract class SetupMapScreen extends Screen {
         val point = new Point(x, y)
         
         if (dock.draggedShip != null) {
-            if (grid.rectangle.contains(point)) {
+            if (grid.bounds.contains(point)) {
                 val gridPoint = grid toGridCoords(point)
                 dock onShipDrop(gridPoint x, gridPoint y)
                 return true
