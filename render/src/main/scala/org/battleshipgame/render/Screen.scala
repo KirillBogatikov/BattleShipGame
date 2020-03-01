@@ -64,10 +64,16 @@ trait Screen extends InputListener {
         renderer fill(true)
         renderer stroke(false)
         
-        val color = button state match {
-            case HOVERED => styles buttonHovered
-            case PRESSED => styles buttonPressed
-            case DEFAULT => styles buttonDefault
+        var color: Long = -1
+        
+        if (button.background == Long.MaxValue) {
+            color = button.state match {
+                case HOVERED => styles buttonHovered
+                case PRESSED => styles buttonPressed
+                case DEFAULT => styles buttonDefault
+            }
+        } else {
+            color = button.background
         }
                 
         renderer fill(color)
@@ -96,7 +102,7 @@ trait Screen extends InputListener {
         renderer stroke(styles linesColor)
         
         var textColor: Long = 0
-        if (input.textColor == Double.MaxValue) {
+        if (input.textColor == Long.MaxValue) {
             textColor = styles textColor
         } else {
             textColor = input textColor
@@ -136,7 +142,7 @@ trait Screen extends InputListener {
      */
     protected def label(view: TextView): Unit = {
         var textColor: Long = 0
-        if (view.textColor == Double.MaxValue) {
+        if (view.textColor == Long.MaxValue) {
             textColor = styles textColor
         } else {
             textColor = view textColor

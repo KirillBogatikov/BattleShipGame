@@ -28,15 +28,24 @@ trait ClickListener {
  * @version 1.0
  * @since 2.0.0
  */
-class TextView(bounds: Rectangle, var text: String, val textSize: Double, val textColor: Long, val corner: Double, var listener: ClickListener) extends View(bounds) {
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, corner: Double) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, corner, () => {})
+class TextView(bounds: Rectangle, var text: String, val textSize: Double, val textColor: Long, var corner: Double, var listener: ClickListener) extends View(bounds) {
+    def this(x: Int, y: Int, w: Int, h: Int, 
+             text: String, textSize: Double, textColor: Long, 
+             listener: ClickListener) =
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, 0.0, listener)
         
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, corner: Double, listener: ClickListener) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, corner, listener)
-        
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, corner: Double, listener: ClickListener) =
+    def this(x: Int, y: Int, w: Int, h: Int, text: String, 
+            textSize: Double, corner: Double, 
+            listener: ClickListener) =
         this(new Rectangle(x, y, w, h), text, textSize, Long.MaxValue, corner, listener)
+        
+    def this(x: Int, y: Int, w: Int, h: Int, text: String, 
+            textSize: Double, corner: Double) =
+        this(new Rectangle(x, y, w, h), text, textSize, Long.MaxValue, corner, () => {})
+        
+    def this(x: Int, y: Int, w: Int, h: Int, 
+            text: String, textSize: Double, textColor: Long) =
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, 0.0, () => {})
 }
 
 /**
@@ -58,8 +67,8 @@ class Button(bounds: Rectangle, text: String, textSize: Double, textColor: Long,
              radius: Double) =
         this(new Rectangle(x, y, w, h), text, textSize, textColor, default, pressed, hovered, radius, DEFAULT, () => {})
         
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double) =
-        this(x, y, w, h, text, textSize, Long.MaxValue, Long.MaxValue, Long.MaxValue, Long.MaxValue, 0.0)
+    def this(x: Int, y: Int, w: Int, h: Int, radius: Double, text: String, textSize: Double) =
+        this(x, y, w, h, text, textSize, Long.MaxValue, Long.MaxValue, Long.MaxValue, Long.MaxValue, radius)
         
     def background(): Long = {
         return state match {
@@ -90,7 +99,7 @@ class ImageView(rectangle: Rectangle, var image: Image, var listener: ClickListe
  * @since 2.0.0
  */
 class GridView(bounds: Rectangle, var cellSize: Int) extends View(bounds) {
-    def this(x: Int, y: Int, width: Int, height: Int, styles: StylesResolver) = 
+    def this(x: Int, y: Int, width: Int, height: Int) = 
         this(new Rectangle(x, y, width, height), width / 10)
         
     def toGridCoords(pixel: Point): Point = {
