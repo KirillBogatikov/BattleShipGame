@@ -46,14 +46,19 @@ class TextView(bounds: Rectangle, var text: String, val textSize: Double, val te
  * @version 1.0
  * @since 2.0.0
  */
-class Button(bounds: Rectangle, text: String, textSize: Double, textColor: Long, val default: Long, val pressed: Long, val hovered: Long, listener: ClickListener, var state: ButtonState) 
+class Button(bounds: Rectangle, text: String, textSize: Double, textColor: Long, 
+             val default: Long, val pressed: Long, val hovered: Long, 
+             listener: ClickListener, var state: ButtonState, val corner: Double) 
     extends TextView(bounds, text, textSize, textColor, listener) {
         
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, default: Long, pressed: Long, hovered: Long) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, default, pressed, hovered, () => {}, DEFAULT)
+    def this(x: Int, y: Int, w: Int, h: Int, 
+             text: String, textSize: Double, textColor: Long, 
+             default: Long, pressed: Long, hovered: Long, 
+             radius: Double) =
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, default, pressed, hovered, () => {}, DEFAULT, radius)
         
     def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double) =
-        this(x, y, w, h, text, textSize, Long.MaxValue, Long.MaxValue, Long.MaxValue, Long.MaxValue)
+        this(x, y, w, h, text, textSize, Long.MaxValue, Long.MaxValue, Long.MaxValue, Long.MaxValue, 0.0)
         
     def background(): Long = {
         return state match {
