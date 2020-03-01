@@ -3,7 +3,6 @@ package org.battleshipgame.render
 import scala.language.postfixOps
 
 import org.battleshipgame.render.ButtonState.{DEFAULT, HOVERED, PRESSED}
-import org.battleshipgame.render.ColorUtils.alpha
 
 /**
  * Экран
@@ -51,7 +50,7 @@ trait Screen extends InputListener {
         
         background()
         buttons foreach(button)
-        images foreach(view => renderer image(view rectangle, view image))
+        images foreach(view => renderer image(view bounds, view image))
         labels foreach(label)
         inputs foreach(input)
         
@@ -72,11 +71,17 @@ trait Screen extends InputListener {
         }
                 
         renderer fill(color)
-        renderer text(styles textColor)
+        var textColor: Long = 0
+        if (button.textColor == Double.MaxValue) {
+            textColor = styles textColor
+        } else {
+            textColor = button textColor
+        }
+        renderer text(textColor)
                 
-        renderer shadow(button rectangle)
-        renderer rectangle(button rectangle)
-        renderer text(button rectangle, button text, button textSize)
+        renderer shadow(button bounds, button corner)
+        renderer rectangle(button bounds, button corner)
+        renderer text(button bounds, button text, button textSize)
     }
     
     /**
@@ -89,17 +94,24 @@ trait Screen extends InputListener {
         
         renderer fill(styles inputBackground)
         renderer stroke(styles linesColor)
-        renderer text(styles textColor)
         
-        renderer rectangle(input rectangle)
-        renderer text(input rectangle, input text, input textSize)
+        var textColor: Long = 0
+        if (input.textColor == Double.MaxValue) {
+            textColor = styles textColor
+        } else {
+            textColor = input textColor
+        }
+        renderer text(textColor)
+        
+        renderer rectangle(input bounds, input corner)
+        renderer text(input bounds, input text, input textSize)
     }
     
     /**
      * Нарисовать сетку игрового поля
      */
-    protected def grid(grid: MapGridView): Unit = {
-        val rect = grid rectangle
+    protected def grid(grid: GridView): Unit = {
+        val rect = grid bounds
         
         renderer fill(true)
         renderer stroke(true)
@@ -108,14 +120,14 @@ trait Screen extends InputListener {
         renderer stroke(styles buttonDefault)
         renderer stroke(styles strokeSize)
         
-        renderer rectangle(rect)
+        renderer rectangle(rect, 0.0)
         
         for(i <- 1 until 10) {            
             var x = rect.x + i * grid.cellSize
-            renderer line(x, rect.y, x, rect.y + rect.height)
+            renderer line(new Point(x, rect.y), new Point(x, rect.y + rect.height))
             
             var y = rect.y + i * grid.cellSize
-            renderer line(rect.x, y, rect.x + rect.height, y)
+            renderer line(new Point(rect.x, y), new Point(rect.x + rect.height, y))
         }
     }
       
@@ -123,11 +135,14 @@ trait Screen extends InputListener {
      * Нарисовать надпись
      */
     protected def label(view: TextView): Unit = {
-        if (view dark) 
-            renderer text(styles darkTextColor)
-        else
-            renderer text(styles textColor)
-        renderer text(view rectangle, view text, view textSize)
+        var textColor: Long = 0
+        if (view.textColor == Double.MaxValue) {
+            textColor = styles textColor
+        } else {
+            textColor = view textColor
+        }
+        renderer text(textColor)
+        renderer text(view bounds, view text, view textSize)
     }
     
     /**
@@ -146,7 +161,7 @@ trait Screen extends InputListener {
      */
     override def onMouseDown(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
-        val option = buttons find(view => view.rectangle contains(point))
+        val option = buttons find(view => view.bounds contains(point))
         
         if (!option.isEmpty) {
             option.get state = PRESSED
@@ -162,7 +177,7 @@ trait Screen extends InputListener {
     override def onMouseMove(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val prevent = buttons find(view => view.state == HOVERED)
-        val current = buttons find(view => view.rectangle contains(point)) 
+        val current = buttons find(view => view.bounds contains(point)) 
               
         if (!prevent.isEmpty && !current.isEmpty && prevent.get == current.get) {
             return false
@@ -190,7 +205,7 @@ trait Screen extends InputListener {
         
         if (!option.isEmpty) {
             val btn = option.get
-            if (btn.rectangle contains(point))
+            if (btn.bounds contains(point))
                 btn state = HOVERED
             else
                 btn state = DEFAULT
@@ -206,20 +221,20 @@ trait Screen extends InputListener {
      */
     override def onClick(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
-        val btn = buttons find(view => view.rectangle contains(point))
+        val btn = buttons find(view => view.bounds contains(point))
                 
         if (!btn.isEmpty) {
             btn.get.listener onClick()
             return true
         }
         
-        val img = images find(view => view.rectangle contains(point))
+        val img = images find(view => view.bounds contains(point))
         if (!img.isEmpty) {
             img.get.listener onClick()
             return true
         }
         
-        val txt = labels find(view => view.rectangle contains(point))
+        val txt = labels find(view => view.bounds contains(point))
         if (!txt.isEmpty) {
             txt.get.listener onClick()
             return true

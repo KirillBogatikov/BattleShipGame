@@ -28,15 +28,15 @@ trait ClickListener {
  * @version 1.0
  * @since 2.0.0
  */
-class TextView(bounds: Rectangle, var text: String, val textSize: Double, val textColor: Long, var listener: ClickListener) extends View(bounds) {
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, () => {})
+class TextView(bounds: Rectangle, var text: String, val textSize: Double, val textColor: Long, val corner: Double, var listener: ClickListener) extends View(bounds) {
+    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, corner: Double) =
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, corner, () => {})
         
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, listener: ClickListener) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, listener)
+    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, textColor: Long, corner: Double, listener: ClickListener) =
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, corner, listener)
         
-    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, listener: ClickListener) =
-        this(new Rectangle(x, y, w, h), text, textSize, Long.MaxValue, listener)
+    def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double, corner: Double, listener: ClickListener) =
+        this(new Rectangle(x, y, w, h), text, textSize, Long.MaxValue, corner, listener)
 }
 
 /**
@@ -48,14 +48,15 @@ class TextView(bounds: Rectangle, var text: String, val textSize: Double, val te
  */
 class Button(bounds: Rectangle, text: String, textSize: Double, textColor: Long, 
              val default: Long, val pressed: Long, val hovered: Long, 
-             listener: ClickListener, var state: ButtonState, val corner: Double) 
-    extends TextView(bounds, text, textSize, textColor, listener) {
+             val corner: Double, var state: ButtonState, 
+             listener: ClickListener) 
+    extends TextView(bounds, text, textSize, textColor, corner, listener) {
         
     def this(x: Int, y: Int, w: Int, h: Int, 
              text: String, textSize: Double, textColor: Long, 
              default: Long, pressed: Long, hovered: Long, 
              radius: Double) =
-        this(new Rectangle(x, y, w, h), text, textSize, textColor, default, pressed, hovered, () => {}, DEFAULT, radius)
+        this(new Rectangle(x, y, w, h), text, textSize, textColor, default, pressed, hovered, radius, DEFAULT, () => {})
         
     def this(x: Int, y: Int, w: Int, h: Int, text: String, textSize: Double) =
         this(x, y, w, h, text, textSize, Long.MaxValue, Long.MaxValue, Long.MaxValue, Long.MaxValue, 0.0)
