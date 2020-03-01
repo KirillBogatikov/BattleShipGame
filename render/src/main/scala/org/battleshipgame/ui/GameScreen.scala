@@ -1,7 +1,7 @@
 package org.battleshipgame.ui
 
 import scala.language.postfixOps
-import org.battleshipgame.render.{Screen, Point, Rectangle, MapGridView}
+import org.battleshipgame.render.{Screen, Point, Rectangle, GridView}
 import org.battleshipgame.render.Size
 import org.battleshipgame.render.Image
 
@@ -16,8 +16,8 @@ trait Bay {
 abstract class GameScreen extends Screen {
     def userBay(): Bay
     def opponentBay(): Bay
-    def userView(): MapGridView
-    def opponentView(): MapGridView
+    def userView(): GridView
+    def opponentView(): GridView
     
     override def render(): Unit = {
         super.render();
@@ -40,33 +40,35 @@ abstract class GameScreen extends Screen {
         
         if (!result) {
             val point = new Point(x, y)
-            if (userView.rectangle contains(point)) {
-                userBay onShot(x, y)
-            } else if (opponentView.rectangle contains(point)) {
-                opponentBay onShot(x, y)
+            if (userView.bounds contains(point)) {
+                val rel = userView toGridCoords(point)
+                userBay onShot(rel x, rel y)
+            } else if (opponentView.bounds contains(point)) {
+                val rel = opponentView toGridCoords(point)
+                opponentBay onShot(rel x, rel y)
             }
         }
         
         return result
     }
     
-    private def renderBay(bay: Bay, view: MapGridView): Unit = {
+    private def renderBay(bay: Bay, view: GridView): Unit = {
         bay.wrecks foreach(wreck => renderCell(styles wreck, wreck, view))
         bay.flames foreach(flame => renderCell(styles flame, flame, view))
         bay.misses foreach(miss => renderCell(styles miss, miss, view))
     }
     
-    private def renderShip(ship: Ship, view: MapGridView): Unit = {
+    private def renderShip(ship: Ship, view: GridView): Unit = {
         val point = view toPixelCoords(ship point)
-        point.x += view.rectangle.x
-        point.y += view.rectangle.y
+        point.x += view.bounds.x
+        point.y += view.bounds.y
         val size = view toPixelSize(ship.rect() size)
         val img = styles ship(ship size, ship orientation)
         
         renderer image(new Rectangle(point, size), img)
     }
     
-    private def renderCell(img: Image, wreck: Point, view: MapGridView): Unit = {
+    private def renderCell(img: Image, wreck: Point, view: GridView): Unit = {
         val point = view toPixelCoords(wreck)
         val size = view toPixelSize(new Size(1, 1))
         
