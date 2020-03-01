@@ -48,7 +48,7 @@ class TextView(bounds: Rectangle, var text: String, val textSize: Double, val te
  */
 class Button(bounds: Rectangle, text: String, textSize: Double, textColor: Long, 
              val default: Long, val pressed: Long, val hovered: Long, 
-             val corner: Double, var state: ButtonState, 
+             corner: Double, var state: ButtonState, 
              listener: ClickListener) 
     extends TextView(bounds, text, textSize, textColor, corner, listener) {
         
