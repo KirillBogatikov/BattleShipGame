@@ -6,7 +6,7 @@
   <name>BattleShip Game Remastered</name>
   <modules>
   	<module>network</module>
-  	<module>legacy</module>
+  	
   	<module>render</module>
   	<module>core</module>
   	<module>desktop</module>
