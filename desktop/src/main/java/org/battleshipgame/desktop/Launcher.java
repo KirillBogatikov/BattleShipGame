@@ -7,11 +7,13 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 
+import org.battleshipgame.core.GameEngine;
 import org.battleshipgame.render.Image;
 import org.battleshipgame.render.Screen;
 import org.battleshipgame.render.StylesResolver;
 import org.battleshipgame.ui.DesktopConnectionScreen;
 import org.battleshipgame.ui.DesktopGameModeScreen;
+import org.battleshipgame.ui.DesktopGameScreen;
 import org.battleshipgame.ui.DesktopMapScreen;
 import org.battleshipgame.ui.DesktopStartScreen;
 
@@ -72,7 +74,7 @@ public class Launcher  {
 	private void showSinglePlayScreen() {
 		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), frame::repaint, styles, renderer);
 		mapScreen.setClickListeners(() -> {
-			 
+			showGameScreen();
 		}, this::showConnectionScreen, () -> {
 			frame.repaint();
 		});
@@ -80,7 +82,13 @@ public class Launcher  {
 	}
 	
 	private void showGameScreen() {
-		
+		GameEngine engine = new GameEngine();
+		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, engine, styles, renderer);
+		gameScreen.setClickListeners(() -> {
+			System.out.println("YOU LOSE");
+			System.exit(0);
+		});
+		setScreen(gameScreen);
 	}
 	
 	private void setScreen(Screen screen) {
