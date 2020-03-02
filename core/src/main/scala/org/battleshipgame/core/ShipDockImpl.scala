@@ -68,7 +68,7 @@ class ShipDockImpl extends ShipsDock {
 				
 			    val option = leftShips find(ship => ship.size.equals(dragged size))
 				if (option isDefined) {
-				    removeShip(option get, leftShips)
+				    leftShips = removeShip(option get, leftShips)
 				}
 			}
 		}

@@ -9,20 +9,24 @@ import scala.util.Random
 import org.battleshipgame.render.Point
 
 class GameEngine {
-    private var friend: Player = _
+    private var friendPlayer: Player = _
 	private var playerBay: Bay = _
 	private var friendBay: Bay = _
 	private var lastShot: Point = _
 	private var random = new Random()
 	
-	def playerBay(layerBay: Bay): Unit = {
+	def player(playerBay: Bay): Unit = {
 		this playerBay = playerBay
 	}
+    
+    def player(): Bay = playerBay
 	
 	def friend(friend: Player, friendBay: Bay): Unit = {
-		this friend = friend
+		this friendPlayer = friend
 		this friendBay = friendBay
 	}
+    
+    def friend(): Bay = friendBay
 	
 	def onShot(point: Point): Unit = {
 		friendBay.locked = true
@@ -49,7 +53,7 @@ class GameEngine {
 			result = MISS
 		}
 		
-		friend lastShot(result)
+		friendPlayer lastShot(result)
 	}
 
 	def onShotResult(result: ShotResult): Unit = {

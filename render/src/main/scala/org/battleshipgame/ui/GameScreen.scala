@@ -6,10 +6,15 @@ import org.battleshipgame.render.Size
 import org.battleshipgame.render.Image
 import scala.collection.mutable.Buffer
 
-abstract class Bay(var ships: Array[Ship] = Array(),
+trait ShotListener {
+    def onShot(x: Int, y: Int): Unit
+}
+
+class Bay(var ships: Array[Ship] = Array(),
           var wrecks: Array[Point] = Array(),
           var flames: Array[Point],
           var misses: Array[Point],
+          var listener: ShotListener,
           var locked: Boolean) {
     
     def ship(index: Int): Unit = {
@@ -29,8 +34,6 @@ abstract class Bay(var ships: Array[Ship] = Array(),
     def miss(point: Point): Unit = {
         misses:+ point
     }
-    
-    def onShot(x: Int, y: Int): Unit
 }
 
 abstract class GameScreen extends Screen {
@@ -66,10 +69,10 @@ abstract class GameScreen extends Screen {
             val point = new Point(x, y)
             if (userView.bounds contains(point)) {
                 val rel = userView toGridCoords(point)
-                userBay onShot(rel x, rel y)
+                userBay.listener onShot(rel x, rel y)
             } else if (opponentView.bounds contains(point)) {
                 val rel = opponentView toGridCoords(point)
-                opponentBay onShot(rel x, rel y)
+                opponentBay.listener onShot(rel x, rel y)
             }
         }
         
