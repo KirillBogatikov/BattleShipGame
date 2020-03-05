@@ -4,11 +4,6 @@ import scala.language.postfixOps
 
 import org.battleshipgame.network.Auth.HOW_ARE_YOU
 import org.battleshipgame.network.Auth.I_M_FINE
-import org.battleshipgame.network.EndGame.LOSE
-import org.battleshipgame.network.EndGame.WIN
-import org.battleshipgame.network.Shot.SHOT
-import org.battleshipgame.network.ShotParser.parse
-import org.battleshipgame.network.ShotResult._
 import org.cuba.log.Log
 
 class PacketProcessor(
@@ -31,17 +26,9 @@ class PacketProcessor(
                 case I_M_FINE => {
                     listener onConnectedToFriend()
                 }
-                case WIN => listener.onGameEnd(true)
-                case LOSE => listener.onGameEnd(false)
-                case SHOT => {
-                    val pos = parse(packet value)
-                    val result = listener onShot(pos(0), pos(1))
-                    var responsePacket = new Packet(packet hash, result toString, null)
-                    networker send(responsePacket)
+                case _ => {
+                    listener onPacketReceived(packet group, packet value)
                 }
-                case "HURT" => listener.onShotResult(HURT)
-                case "KILL" => listener.onShotResult(KILL)
-                case "MISS" => listener.onShotResult(MISS)
             }
         }
     }

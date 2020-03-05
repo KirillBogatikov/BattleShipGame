@@ -1,20 +1,13 @@
 package org.battleshipgame
 
-import java.util.concurrent.Executors
+import java.util.concurrent.{ Executor, Executors}
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.language.postfixOps
 
-import org.battleshipgame.network.EventListener
-import org.battleshipgame.network.Networker
-import org.battleshipgame.network.Packet
-import org.battleshipgame.network.PacketProcessor
+import org.battleshipgame.network.{ EventListener, Networker, Packet, PacketProcessor }
 import org.battleshipgame.network.Auth.HOW_ARE_YOU
-import org.battleshipgame.network.Shot
-import org.battleshipgame.network.Shot.SHOT
-import org.battleshipgame.network.ShotParser.{ stringify => shotStringify }
-import org.battleshipgame.network.GameIdParser.{ parse => gameParse }
-import org.battleshipgame.network.GameIdParser.{ stringify => gameStringify }
+import org.battleshipgame.network.GameIdParser.{ parse => gameParse, stringify => gameStringify }
 import org.cuba.log.Log
 
 class MultiPlayer(
@@ -25,12 +18,14 @@ class MultiPlayer(
 
     private var hash: String = null
     private var alive = new AtomicBoolean(true)
-    private var pool = Executors newFixedThreadPool(2)
+    private var pool: Executor = _
     private val processor = new PacketProcessor(log, networker, listener)
 
     def start(): Unit = {
         this hash = HashGenerator next()
         log d (TAG, "Using hash: " + hash)
+        pool = Executors newFixedThreadPool(2)
+        log d (TAG, "Threads pooled")
         pool execute(() => {
             while (alive get()) {
                 val time = System currentTimeMillis()
@@ -54,22 +49,22 @@ class MultiPlayer(
         log d(TAG, "Processor started in thread pool")
     }
 
-    def shot(x: Int, y:Int): Unit = {
-        pool execute(() => {
-            val packet = new Packet(hash, SHOT, shotStringify(x, y))
-            networker send(packet)
-        })
-    }
-
-    def gameId(): String = {
+    def createId(): String = {
         return gameStringify(networker gameId(hash))
     }
 
-    def connect(gameIdString: String): Unit = {
+    def connect(gameId: String): Unit = {
         pool execute(() => {
-            networker.useGameHost(gameParse(gameIdString))
+            networker.useGameHost(gameParse(gameId))
 
             val packet = new Packet(hash, HOW_ARE_YOU, null)
+            networker send(packet)
+        })
+    }
+    
+    def send(group: String, value: String): Unit = {
+        pool execute(() => {
+            val packet = new Packet(hash, group, value)
             networker send(packet)
         })
     }
