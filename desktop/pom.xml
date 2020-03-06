@@ -13,4 +13,29 @@
   		<version>2.0.0</version>
   	</dependency>
   </dependencies>
+  <build>
+  	<plugins>
+        <plugin>
+        	<artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+		        <archive>
+		            <manifest>
+		                <mainClass>org.battleshipgame.desktop.Launcher</mainClass>
+		            </manifest>
+		        </archive>
+	        </configuration>
+        </plugin>
+  	</plugins>
+ 	</build>
 </project>
