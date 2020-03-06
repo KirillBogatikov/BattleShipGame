@@ -12,10 +12,18 @@ import org.battleshipgame.network.udp.Parser.bytesOf
 import org.battleshipgame.network.udp.Parser.parse
 import org.battleshipgame.network.GameId
 
-class UdpNetworker(val port: Int) extends Networker {
-    private var socket = new DatagramSocket(port)
+class UdpNetworker extends Networker {  
+    private var port: Int = _
+    private var socket: DatagramSocket = _
     private var clientIp: InetAddress = null
     private var clientPort: Int = 0
+    
+    def this(port: Int) = {
+        this()
+        this.port = port
+        socket = new DatagramSocket()
+        socket.connect(InetAddress.getLocalHost(), port);
+    }
 
     def receive(hash: String): Packet = {
         var bytes = new Array[Byte](4)
@@ -57,11 +65,11 @@ class UdpNetworker(val port: Int) extends Networker {
 
         socket send(dp)
 
-        dp setData(bytes, 0, contentLength)
+        dp setData(content, 0, contentLength)
         socket send(dp)
     }
 
-    def gameId(hash: String): GameId = {
+    def gameId(hash: String): GameId = {        
         val ip = socket getInetAddress() getHostAddress()
         return new GameId(hash, ip + ":" + port)
     }

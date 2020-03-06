@@ -63,12 +63,12 @@ public class DesktopGameScreen extends GameScreen {
 	
 	@Override
 	public Bay userBay() {
-		return engine.player();
+		return engine.playerBay();
 	}
 
 	@Override
 	public Bay opponentBay() {
-		return engine.friend();
+		return engine.friendBay();
 	}
 
 	@Override

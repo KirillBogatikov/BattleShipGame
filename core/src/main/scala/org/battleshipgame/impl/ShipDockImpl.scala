@@ -1,9 +1,10 @@
-package org.battleshipgame.core
+package org.battleshipgame.impl
 
 import scala.language.postfixOps
 import org.battleshipgame.ui.{Ship, ShipSize, ShipOrientation, ShipsDock}
 import org.battleshipgame.ui.ShipOrientation._
 import org.battleshipgame.render.{Rectangle, Size, Point}
+import org.battleshipgame.core.RenderListener
 
 class ShipDockImpl extends ShipsDock {
     private var dragged: Ship = _
@@ -99,7 +100,7 @@ class ShipDockImpl extends ShipsDock {
 		var option = placedShips find(ship => ship.rect().contains(point))
 		
 		if (option isDefined) {
-		    removeShip(option get, placedShips)
+		    placedShips = removeShip(option get, placedShips)
 			leftShips = leftShips:+ (option get)
 		}
 	}

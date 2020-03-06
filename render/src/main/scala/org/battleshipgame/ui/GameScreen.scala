@@ -10,12 +10,12 @@ trait ShotListener {
     def onShot(x: Int, y: Int): Unit
 }
 
-class Bay(var ships: Array[Ship] = Array(),
+class Bay(var listener: ShotListener = (x: Int, y: Int) => {},
+          var ships: Array[Ship] = Array(),
           var wrecks: Array[Point] = Array(),
-          var flames: Array[Point],
-          var misses: Array[Point],
-          var listener: ShotListener,
-          var locked: Boolean) {
+          var flames: Array[Point] = Array(),
+          var misses: Array[Point] = Array(),
+          var locked: Boolean = false) {
     
     def ship(index: Int): Unit = {
         var buf = ships.toBuffer
@@ -24,15 +24,15 @@ class Bay(var ships: Array[Ship] = Array(),
     }
     
     def wreck(point: Point): Unit = {
-        wrecks:+ point
+        wrecks = wrecks:+ point
     }
     
     def flame(point: Point): Unit = {
-        flames:+ point
+        flames = flames:+ point
     }
     
     def miss(point: Point): Unit = {
-        misses:+ point
+        misses = misses:+ point
     }
 }
 
@@ -51,7 +51,7 @@ abstract class GameScreen extends Screen {
         grid(opponentView)
         
         userBay.ships foreach(ship => renderShip(ship, userView))
-        renderBay(userBay, opponentView)
+        renderBay(userBay, userView)
         
         renderBay(opponentBay, opponentView)
         
@@ -61,7 +61,7 @@ abstract class GameScreen extends Screen {
     override def onClick(x: Int, y: Int): Boolean = {
         val result = super.onClick(x, y)
         
-        if (opponentBay locked) {
+        if (userBay.locked || opponentBay.locked) {
             return result
         }
         
@@ -97,6 +97,9 @@ abstract class GameScreen extends Screen {
     
     private def renderCell(img: Image, wreck: Point, view: GridView): Unit = {
         val point = view toPixelCoords(wreck)
+        point.x += view.x
+        point.y += view.y
+        
         val size = view toPixelSize(new Size(1, 1))
         
         renderer image(new Rectangle(point, size), img)

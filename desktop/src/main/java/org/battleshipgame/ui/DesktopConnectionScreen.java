@@ -14,9 +14,11 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 	private Renderer renderer;
 	private Button connect, create;
 	private ImageView backView;
+	private TextView loadingLabel;
 	private TextView backLabel;
 	private TextView screenLabel;
 	private TextView gameId;
+	private boolean loading;
 	
 	public DesktopConnectionScreen(Image backImage, StylesResolver styles, Renderer renderer) {
 		this.styles = styles;
@@ -27,7 +29,8 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 		backView = new ImageView(25, 50, 50, 50, backImage);
 		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, styles.darkTextColor());
 		screenLabel = new TextView(280, 50, 400, 50, "СЕТЕВАЯ ИГРА", 24.0, styles.darkTextColor());
-		gameId = new TextView(280, 200, 400, 60, "", 24.0, 20.0);
+		loadingLabel = new TextView(355, 320, 250, 60, "ОЖИДАНИЕ ИГРОКА", 24.0, styles.darkTextColor());
+		gameId = new TextView(230, 200, 500, 60, "", 24.0, 20.0);
 	}
 	
 	public void setClickListeners(ClickListener connect, ClickListener create, ClickListener back) {
@@ -35,6 +38,15 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 		this.create.listener_$eq(create);
 		backView.listener_$eq(back);
 		backLabel.listener_$eq(back);
+	}
+	
+	public void setLoading(boolean loading) {
+		this.loading = loading;
+	}
+	
+	@Override
+	public TextView gameId() {
+		return super.gameId();
 	}
 	
 	@Override
@@ -59,6 +71,9 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 
 	@Override
 	public TextView[] labels() {
+		if(loading) {
+			return new TextView[] { backLabel, screenLabel, loadingLabel };
+		}
 		return new TextView[] { backLabel, screenLabel };
 	}
 
@@ -69,7 +84,19 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 
 	@Override
 	public Button[] buttons() {
-		return new Button[] { create, connect };
+		if(loading) {
+			return new Button[] {};
+		} else {
+			return new Button[] { create, connect };
+		}
+	}
+	
+	@Override
+	public boolean onKeyPress(int code) {
+		if(!loading) {
+			return super.onKeyPress(code);
+		}
+		return false;
 	}
 
 }

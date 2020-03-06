@@ -1,76 +1,74 @@
 package org.battleshipgame.core
 
 import scala.language.postfixOps
-import java.util.Arrays
-import org.battleshipgame.network.ShotResult
-import org.battleshipgame.network.ShotResult._
+
+import org.battleshipgame.MultiPlayer
+import org.battleshipgame.network.EventListener
+import org.battleshipgame.network.udp.UdpNetworker
 import org.battleshipgame.ui.Bay
-import scala.util.Random
+import org.battleshipgame.ui.ShotListener
+import org.battleshipgame.core.AreaParser.{ parse => areaParse }
+import org.cuba.log.Log
+
+import PacketGroup._
+import ShotParser.parse
+import org.battleshipgame.ui.Ship
 import org.battleshipgame.render.Point
 
-class GameEngine {
-    private var friendPlayer: Player = _
-	private var playerBay: Bay = _
-	private var friendBay: Bay = _
-	private var lastShot: Point = _
-	private var random = new Random()
-	
-	def player(playerBay: Bay): Unit = {
-		this playerBay = playerBay
-	}
+class GameEngine(
+        val playerShips: Array[Ship],
+        val log: Log, 
+        val coreListener: CoreListener) {
     
-    def player(): Bay = playerBay
+	var playerBay: Bay = new Bay((x, y) => {}, playerShips)
+	var friendBay: Bay = new Bay((x, y) => {
+	    val point = new Point(x, y)
+	    player.nextShot(point)
+	    friend.processShot(point)
+	})
+    var player: Player = new Player(playerBay, friendBay)
+    var friend: Player = _
+	var multiplayer: MultiPlayer = _
 	
-	def friend(friend: Player, friendBay: Bay): Unit = {
-		this friendPlayer = friend
-		this friendBay = friendBay
+	private def startMultiPlayer(): Unit = {
+	    multiplayer = new MultiPlayer(log, new UdpNetworker(6747), new EngineEventListener(coreListener, player))
+	    friend = new RemotePlayer(null, null, multiplayer)
+        player.friend = friend
+        multiplayer start()
 	}
+			    
+    def connect(gameId: String): Unit = {
+        startMultiPlayer()
+        multiplayer connect(gameId)
+    }
+	
+    def gameId(): String = {
+        startMultiPlayer()
+        return multiplayer createId
+    }
     
-    def friend(): Bay = friendBay
-	
-	def onShot(point: Point): Unit = {
-		friendBay.locked = true
-		
-		var result: ShotResult = null;
-		val option = playerBay.ships.find(ship => ship.rect().contains(point))
-		
-		if (option isDefined) {
-			val ship = option get
-		
-			playerBay wreck(point)
-			
-			if (random nextBoolean) {
-				playerBay flame(point)
-			}
-			
-			if (ship.damage(point) == ship.size.toInt) {
-				result = KILL
-			} else {
-				result = HURT
-			}
-		} else {
-			playerBay miss(point)
-			result = MISS
-		}
-		
-		friendPlayer lastShot(result)
-	}
+    def skynet(): Unit = {
+        friend = new ComputerPlayer(playerBay, friendBay, player)
+        player.friend = friend
+    }
+}
 
-	def onShotResult(result: ShotResult): Unit = {
-		result match {
-			case MISS => { 
-				friendBay miss(lastShot);
-				friendBay locked = true;
-			}
-			case HURT => case KILL => {
-				friendBay locked = false;
-				friendBay wreck(lastShot);
-				
-				if(random nextBoolean) {
-					friendBay flame(lastShot);
-				}
-			}
-			case _ =>
-		}
-	}
+class EngineEventListener(coreListener: CoreListener, player: Player) extends EventListener {
+    override def onFriendConnected(): Unit = {
+        coreListener.onConnected(true)
+    }
+    
+    override def onConnectedToFriend(): Unit = {
+        coreListener.onConnected(false)
+    }
+    
+    override def onPacketReceived(group: String, value: String): Unit = {
+        if (group == SHOT_POINT.toString)
+            player.processShot(parse(value))
+        else if (group == SHOT_RESULT.toString) {
+            val parts = value.split(";")
+            player.lastShot(ShotResult valueOf(parts(0)), areaParse(parts(1)))
+        } else if (group == GAME_RESULT.toString)
+            coreListener.onGameEnd(value toBoolean)
+    }
 }

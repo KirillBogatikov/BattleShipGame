@@ -22,7 +22,7 @@ case class Ship(val size: ShipSize, var point: Point, var orientation: ShipOrien
     def this(size: ShipSize) = this(size, new Point(0, 0), HORIZONTAL)
     
     def damage(point: Point): Int = {
-        damaged(totalDamage) = point
+        damaged = damaged:+ point
         totalDamage += 1
         return totalDamage
     }

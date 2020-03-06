@@ -7,7 +7,9 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 
+import org.battleshipgame.core.CoreListener;
 import org.battleshipgame.core.GameEngine;
+import org.battleshipgame.impl.ShipDockImpl;
 import org.battleshipgame.render.Image;
 import org.battleshipgame.render.Screen;
 import org.battleshipgame.render.StylesResolver;
@@ -16,8 +18,13 @@ import org.battleshipgame.ui.DesktopGameModeScreen;
 import org.battleshipgame.ui.DesktopGameScreen;
 import org.battleshipgame.ui.DesktopMapScreen;
 import org.battleshipgame.ui.DesktopStartScreen;
+import org.battleshipgame.ui.Ship;
+import org.cuba.log.Configurator;
+import org.cuba.log.Log;
 
 public class Launcher  {
+	private Log log;
+	
 	private SwingFrame frame;
 	private StylesResolver styles;
 	private SwingRenderer renderer;
@@ -25,7 +32,12 @@ public class Launcher  {
 	private SwingKeyListener keyListener;
 	private Image backImage;
 	
-	public Launcher() throws IOException {		
+	private ShipDockImpl shipsDock;
+	private GameEngine gameEngine = null;
+	
+	public Launcher() throws IOException {
+		log = new Log(Configurator.system().build());
+		
 		URL fontPath = Launcher.class.getClassLoader().getResource("fonts/Roboto.ttf");
 		Font applicationFont;
         try {
@@ -47,6 +59,8 @@ public class Launcher  {
 		keyListener = new SwingKeyListener(frame);
 		
 		backImage = loadImage("arrow_back.png");
+		
+		shipsDock = new ShipDockImpl(frame::repaint);
 	}
 	
 	private void showStartScreen() {
@@ -57,38 +71,67 @@ public class Launcher  {
 
 	private void showChooseModeScreen() {
 		DesktopGameModeScreen modeScreen = new DesktopGameModeScreen(backImage, styles, renderer);
-		modeScreen.setClickListeners(this::showSinglePlayScreen, this::showConnectionScreen, this::showStartScreen);
+		modeScreen.setClickListeners(() -> {
+			initGame();
+			gameEngine.skynet();
+			showMapScreen(false);
+		}, this::showConnectionScreen, this::showStartScreen);
 		setScreen(modeScreen);
 	}
 	
 	private void showConnectionScreen() {
 		DesktopConnectionScreen connScreen = new DesktopConnectionScreen(backImage, styles, renderer);
 		connScreen.setClickListeners(() -> {
-			//TODO connect
+			initGame();
+			gameEngine.connect(connScreen.gameId().text());
 		}, () -> {
-			//TODO create
+			initGame();
+			connScreen.gameId().text_$eq(gameEngine.gameId());
+			connScreen.setLoading(true);
 		}, this::showChooseModeScreen);
 		setScreen(connScreen);
 	}
 	
-	private void showSinglePlayScreen() {
-		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), frame::repaint, styles, renderer);
+	private void showMapScreen(boolean online) {
+		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), shipsDock, styles, renderer);
 		mapScreen.setClickListeners(() -> {
+			gameEngine.playerBay().ships_$eq(shipsDock.placed());
 			showGameScreen();
-		}, this::showConnectionScreen, () -> {
-			frame.repaint();
-		});
+		}, online ? this::showConnectionScreen : this::showChooseModeScreen, frame::repaint);
 		setScreen(mapScreen);
 	}
 	
+	private void initGame() {
+		gameEngine = new GameEngine(new Ship[0], log, new CoreListener() {
+			public void onConnected(boolean client) {
+				showMapScreen(true);
+			}
+			
+		    public void onGameEnd(boolean win) {
+		    	
+		    }
+		});
+	}
+	
 	private void showGameScreen() {
-		GameEngine engine = new GameEngine();
-		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, engine, styles, renderer);
+		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, gameEngine, styles, renderer);
 		gameScreen.setClickListeners(() -> {
 			System.out.println("YOU LOSE");
 			System.exit(0);
 		});
 		setScreen(gameScreen);
+		
+		Thread t = new Thread(() -> {
+			while(true) {
+				try {
+					frame.repaint();
+					Thread.sleep(100L);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		t.start();
 	}
 	
 	private void setScreen(Screen screen) {

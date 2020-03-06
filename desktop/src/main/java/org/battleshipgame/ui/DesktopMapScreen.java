@@ -1,12 +1,11 @@
 package org.battleshipgame.ui;
 
-import org.battleshipgame.core.RenderListener;
-import org.battleshipgame.core.ShipDockImpl;
+import org.battleshipgame.impl.ShipDockImpl;
 import org.battleshipgame.render.Button;
 import org.battleshipgame.render.ClickListener;
+import org.battleshipgame.render.GridView;
 import org.battleshipgame.render.Image;
 import org.battleshipgame.render.ImageView;
-import org.battleshipgame.render.GridView;
 import org.battleshipgame.render.Renderer;
 import org.battleshipgame.render.Size;
 import org.battleshipgame.render.StylesResolver;
@@ -24,8 +23,8 @@ public class DesktopMapScreen extends MapScreen {
 	private ImageView[] verticalShipViews;
 	private Button start;
 
-	public DesktopMapScreen(Image backImage, Image rotateImage, RenderListener listener, StylesResolver styles, Renderer renderer) {
-		dock = new ShipDockImpl(listener);
+	public DesktopMapScreen(Image backImage, Image rotateImage, ShipDockImpl dock, StylesResolver styles, Renderer renderer) {
+		this.dock = dock;
 		this.styles = styles;
 		this.renderer = renderer;
 		
