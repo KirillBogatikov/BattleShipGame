@@ -14,13 +14,16 @@ class PacketProcessor(
 
     def process(packet: Packet): Unit = {
         if (packet == null) {
-            log i(TAG, "Received invalid packet")
+            log d(TAG, "Received invalid packet")
         } else {
+            log d(TAG, "Received packet \"" + packet.group + "/" + packet.value + "\"")
+            
             packet group match {
                 case HOW_ARE_YOU => {
                     listener onFriendConnected()
 
                     var responsePacket = new Packet(packet hash, I_M_FINE, null)
+                    log d(TAG, "Senging " + I_M_FINE)
                     networker send(responsePacket)
                 }
                 case I_M_FINE => {

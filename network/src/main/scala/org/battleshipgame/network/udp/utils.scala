@@ -27,7 +27,7 @@ object Crypto {
 }
 
 object Parser {
-    private val DELIMITER = "|"
+    private val DELIMITER = ";"
 
     def parse(content: Array[Byte]): Packet = {
         val parts = new String(content) split(DELIMITER)

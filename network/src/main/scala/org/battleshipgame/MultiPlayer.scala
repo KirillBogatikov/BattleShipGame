@@ -23,13 +23,16 @@ class MultiPlayer(
 
     def start(): Unit = {
         this hash = HashGenerator next()
-        log d (TAG, "Using hash: " + hash)
+        log d (TAG, "Generated hash: " + hash)
+        
         pool = Executors newFixedThreadPool(2)
         log d (TAG, "Threads pooled")
+        
         pool execute(() => {
             while (alive get()) {
                 val time = System currentTimeMillis()
-                log d(TAG, "Waiting Packet")
+                log d(TAG, "Current time: " + time)
+                log d(TAG, "Waiting Packet...")
 
                 var packet = networker receive(hash);
 
@@ -50,19 +53,26 @@ class MultiPlayer(
     }
 
     def createId(): String = {
-        return gameStringify(networker gameId(hash))
+        val gameId = networker gameId(hash)
+        log d(TAG, "GameId:\nhash: " + hash + ", connection: " + gameId.connection)
+        return gameStringify(gameId)
     }
 
     def connect(gameId: String): Unit = {
+        log d(TAG, "Try to connect with GameId: " + gameId)
         pool execute(() => {
-            networker.useGameHost(gameParse(gameId))
+            val obj = gameParse(gameId)
+            log d(TAG, "Parsed GameId:\nhash: " + obj.hash + ", connection: " + obj.connection)
+            networker host(obj)
 
             val packet = new Packet(hash, HOW_ARE_YOU, null)
+            log d(TAG, "Sending \"" + HOW_ARE_YOU + "\"")
             networker send(packet)
         })
     }
     
     def send(group: String, value: String): Unit = {
+        log d(TAG, "Sending \"" + group + "/" + value + "\"")
         pool execute(() => {
             val packet = new Packet(hash, group, value)
             networker send(packet)
@@ -70,6 +80,7 @@ class MultiPlayer(
     }
 
     def stop(): Unit = {
+        log d(TAG, "Stopping server...")
         alive set(false)
     }
 }

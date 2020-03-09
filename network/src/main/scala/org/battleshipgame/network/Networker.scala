@@ -1,8 +1,11 @@
 package org.battleshipgame.network
 
-trait Networker {
+import org.cuba.log.Log
+
+abstract class Networker {
+    def logger(log: Log): Unit
     def receive(hash: String): Packet
     def send(packet: Packet): Unit
-    def useGameHost(gameId: GameId): Unit
+    def host(gameId: GameId): Unit
     def gameId(hash: String): GameId
 }
