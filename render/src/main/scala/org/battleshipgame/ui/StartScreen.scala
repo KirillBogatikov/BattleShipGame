@@ -10,8 +10,5 @@ import org.battleshipgame.render.{Button, Screen}
  * Минималистично, однако (с)
  */
 abstract class StartScreen extends Screen {
-    /**
-     * Чисто напоминалка, что этот метод надо реализовать
-     */
-    def buttons(): Array[Button]
+    
 }

@@ -1,9 +1,7 @@
 package org.battleshipgame.ui
 
 import scala.language.postfixOps
-import org.battleshipgame.render.{Screen, Point, Rectangle, GridView}
-import org.battleshipgame.render.Size
-import org.battleshipgame.render.Image
+import org.battleshipgame.render.{Screen, Point, Rectangle, GridView, Size, Image }
 import scala.collection.mutable.Buffer
 
 trait ShotListener {

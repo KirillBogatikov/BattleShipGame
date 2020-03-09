@@ -28,7 +28,14 @@ trait ClickListener {
  * @version 1.0
  * @since 2.0.0
  */
-class TextView(bounds: Rectangle, var text: String, val textSize: Double, val textColor: Long, var corner: Double, var listener: ClickListener) extends View(bounds) {
+class TextView(bounds: Rectangle, 
+    var text: String, val textSize: Double, val textColor: Long, 
+    var corner: Double,
+    var listener: ClickListener) extends View(bounds) {
+    
+    var focused: Boolean = false
+    var cursorPosition: Int = 0
+    
     def this(x: Int, y: Int, w: Int, h: Int, 
              text: String, textSize: Double, textColor: Long, 
              listener: ClickListener) =

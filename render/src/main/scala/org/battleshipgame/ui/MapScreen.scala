@@ -3,12 +3,7 @@ package org.battleshipgame.ui
 import scala.language.postfixOps
 import scala.util.control.Breaks
 
-import org.battleshipgame.render.Button
-import org.battleshipgame.render.GridView
-import org.battleshipgame.render.Point
-import org.battleshipgame.render.Rectangle
-import org.battleshipgame.render.Screen
-import org.battleshipgame.render.View
+import org.battleshipgame.render.{ Button, GridView, Point, Rectangle, Screen, View }
 
 /**
  * Док кораблей, этакий мэнэджэр
@@ -70,7 +65,7 @@ abstract class ShipsDock {
  */
 abstract class MapScreen extends Screen {
     /**
-     * Платформа, дай док
+     * Дай док
      */
     def dock(): ShipsDock 
     
@@ -102,10 +97,9 @@ abstract class MapScreen extends Screen {
         
         renderer begin()
         
-        dock left() foreach(s => {
-            val view = ship(s size, s orientation) 
-            val img = styles ship(s size, s orientation)
-            renderer image(view bounds, img)
+        dock left() foreach(ship => {
+            val img = styles ship(ship size, ship orientation)
+            renderer image(ship rect, img)
         })
                 
         grid(grid)

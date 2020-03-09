@@ -159,50 +159,114 @@ trait Screen extends InputListener {
         renderer image(rect, styles background)
     }
     
-    override def onKeyPress(key: Int): Boolean = false
+    /**
+     * Ооо, проверяем ввод символов и меняем содержимое текстового поля
+     * Слабонервные - пройдите в следующий файл
+     */
+    override def onKeyPress(key: Int): Boolean = {
+        val option = inputs find(view => view.focused)
+        
+        if (option isDefined) {
+            val input = option get
+            var text = input text
+            var cursor = input cursorPosition
+        
+            if (key == 8) {
+                //BACKSPACE <-
+                if (cursor > 0) {
+                    input.cursorPosition -= 1
+                    val left = text substring(0, cursor) 
+                    val right = text substring(cursor + 1)
+                                    
+                    text = left + right
+                }
+            } else if (key == 127) {
+                //DELETE del
+                if (cursor < text.length - 1) {
+                    val left = text substring(0, cursor)
+                    val right = text substring(cursor + 1)
+                    input.cursorPosition -= 1
+                                    
+                    text = left + right
+                }
+            } else {
+                input.cursorPosition += 1
+                //какой-то символ
+                text = text + (key toChar)
+            }
+            
+            //апдейт
+            input text = text
+            
+            true
+        }
+        
+        false
+    }
     
     /**
      * Если юзер нажал клавишу мыши, проходим все кнопки и ищем ту, на которой находится курсор
-     * Т.к. клавишу еще зажата, меняем состояние кнопки на НАЖАТАЯ и (возможно) перерисовываем ее
+     * Т.к. клавишу еще зажата, меняем состояние кнопки на НАЖАТАЯ и просим перерисовывать ее
      */
     override def onMouseDown(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
-        val option = buttons find(view => view.bounds contains(point))
         
-        if (!option.isEmpty) {
-            option.get state = PRESSED
-            return true
+        val prevent = inputs find(view => view.focused)
+        val btn = buttons find(view => view.bounds contains(point))
+        
+        if (btn isDefined) {
+            btn.get state = PRESSED
+            
+            if (prevent isDefined) {
+                prevent.get focused = false
+            }
+            
+            true
         }
-        return false
+        
+        val current = inputs find(view => view.bounds contains(point))
+        if (current isDefined) {
+            current.get focused = true
+            
+            if (prevent isDefined) {
+                prevent.get focused = false
+            }
+            
+            true
+        }
+        
+        false
     }
     
     /**
      * Если юзер двинул мышь, проходим все кнопки и ищем ту, на которой находится курсор
-     * Ну а потом меняем состояние кнопки на ХОВЕРЕД (не придумал короткого перевода) и (возможно) перерисовываем ее
+     * Ну а потом меняем состояние кнопки на ХОВЕРЕД (не придумал короткого перевода) и просим перерисовывать ее
      */
     override def onMouseMove(x: Int, y: Int): Boolean = {
         val point = new Point(x, y)
         val prevent = buttons find(view => view.state == HOVERED)
         val current = buttons find(view => view.bounds contains(point)) 
               
-        if (!prevent.isEmpty && !current.isEmpty && prevent.get == current.get) {
+        if (prevent.isDefined && current.isDefined && prevent.get == current.get) {
             return false
         }
         
-        if (!prevent.isEmpty) {
+        if (prevent isDefined) {
             prevent.get state = DEFAULT
             return true
         }
-        if (!current.isEmpty) {
+        
+        if (current isDefined) {
             current.get state = HOVERED
             return true
         }
+        
         return false
     }
     
     /**
      * Если юзер отпустил клавишу мыши, проходим все кнопки и ищем ту, на которой находится курсор
-     * Ну а потом меняем состояние кнопки на ОБЫЧНАЯ и (возможно) перерисовываем ее + вызываем ее onClick
+     * Ну а потом меняем состояние кнопки на ОБЫЧНАЯ и просим перерисовывать ее + вызываем ее onClick
      * (по сути юзер же кликнул)
      */
     override def onMouseUp(x: Int, y: Int): Boolean = {
@@ -218,6 +282,7 @@ trait Screen extends InputListener {
                 
             return true
         }
+        
         return false
     }
     
@@ -229,19 +294,19 @@ trait Screen extends InputListener {
         val point = new Point(x, y)
         val btn = buttons find(view => view.bounds contains(point))
                 
-        if (!btn.isEmpty) {
+        if (btn isDefined) {
             btn.get.listener onClick()
             return true
         }
         
         val img = images find(view => view.bounds contains(point))
-        if (!img.isEmpty) {
+        if (img isDefined) {
             img.get.listener onClick()
             return true
         }
         
         val txt = labels find(view => view.bounds contains(point))
-        if (!txt.isEmpty) {
+        if (txt isDefined) {
             txt.get.listener onClick()
             return true
         }
