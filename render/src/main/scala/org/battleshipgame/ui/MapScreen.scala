@@ -53,7 +53,7 @@ abstract class ShipsDock {
      * 
      * Не инвалид, а прямоугольник с ограниченными возможностями (с)
      */
-    def invalid(): Rectangle
+    def highlightedArea(): Rectangle
 }
 
 /**
@@ -104,15 +104,15 @@ abstract class MapScreen extends Screen {
                 
         grid(grid)
         
-        if (dock.invalid != null) {
+        if (dock.highlightedArea != null) {
             renderer fill(true)
             renderer stroke(true)
             renderer fill(styles highlightBackground)
             renderer stroke(styles highlightStroke)
-            val point = grid toPixelCoords(dock.invalid start)
+            val point = grid toPixelCoords(dock.highlightedArea start)
             point.x += grid.bounds.x 
             point.y += grid.bounds.y 
-            val size = grid toPixelSize(dock.invalid size) 
+            val size = grid toPixelSize(dock.highlightedArea size) 
             renderer rectangle(new Rectangle(point, size), 0.0)
         }
         
