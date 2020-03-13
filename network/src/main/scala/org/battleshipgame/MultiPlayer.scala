@@ -7,19 +7,18 @@ import scala.language.postfixOps
 
 import org.battleshipgame.network.{ EventListener, Networker, Packet, PacketProcessor }
 import org.battleshipgame.network.Auth.HOW_ARE_YOU
-import org.battleshipgame.network.GameIdParser.{ parse => gameParse, stringify => gameStringify }
 import org.cuba.log.Log
+import org.battleshipgame.network.GameId
 
 class MultiPlayer(
     private val log: Log,
-    private val networker: Networker,
-    private val listener: EventListener) {
+    private val networker: Networker) {
     private val TAG = this getClass() getSimpleName()
 
     private var hash: String = null
     private var alive = new AtomicBoolean(true)
     private var pool: Executor = _
-    private val processor = new PacketProcessor(log, networker, listener)
+    var listener: EventListener = _
 
     def start(): Unit = {
         this hash = HashGenerator next()
@@ -38,6 +37,7 @@ class MultiPlayer(
 
                 log d(TAG, "Packet received after " + (System.currentTimeMillis() - time) + "ms. Processing Packet")
 
+                val processor = new PacketProcessor(log, networker, listener)
                 processor process(packet);
 
                 log d(TAG, "Packet processed. Try to sleep")
@@ -52,18 +52,17 @@ class MultiPlayer(
         log d(TAG, "Processor started in thread pool")
     }
 
-    def createId(): String = {
+    def createId(): GameId = {
         val gameId = networker gameId(hash)
         log d(TAG, "GameId:\nhash: " + hash + ", connection: " + gameId.connection)
-        return gameStringify(gameId)
+        return gameId
     }
 
-    def connect(gameId: String): Unit = {
+    def connect(gameId: GameId): Unit = {
         log d(TAG, "Try to connect with GameId: " + gameId)
         pool execute(() => {
-            val obj = gameParse(gameId)
-            log d(TAG, "Parsed GameId:\nhash: " + obj.hash + ", connection: " + obj.connection)
-            networker host(obj)
+            log d(TAG, "Parsed GameId:\nhash: " + gameId.hash + ", connection: " + gameId.connection)
+            networker host(gameId)
 
             val packet = new Packet(hash, HOW_ARE_YOU, null)
             log d(TAG, "Sending \"" + HOW_ARE_YOU + "\"")

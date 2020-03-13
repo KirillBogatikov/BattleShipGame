@@ -1,5 +1,5 @@
 package org.battleshipgame.core;
 
 public enum ShotResult {
-	HURT, KILL, MISS
+	HURT, KILL, MISS, OCCUPIED
 }

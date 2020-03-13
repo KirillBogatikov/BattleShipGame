@@ -82,7 +82,7 @@ abstract class MapScreen extends Screen {
     /**
      * Дай кораблик по размеру и ориентации
      */
-    def ship(size: ShipSize, orientation: ShipOrientation): View
+    def ship(size: ShipSize, orientation: ShipOrientation, id: Int): View
     
     override def buttons(): Array[Button] = {
         var array: Array[Button] = Array()
@@ -97,10 +97,25 @@ abstract class MapScreen extends Screen {
         
         renderer begin()
         
-        dock left() foreach(ship => {
+        val left = dock left
+        val length = left.length
+        var lastSize: ShipSize = null
+        var offset = 0
+        
+        for (i <- 0 until length) {
+            val ship = left(i)
+            
+            if (lastSize != ship.size) {
+                lastSize = ship.size
+                offset = 0
+            }
+            
             val img = styles ship(ship size, ship orientation)
-            renderer image(ship rect, img)
-        })
+            val view = this ship(ship size, ship orientation, offset)
+            renderer image(view bounds, img)
+                        
+            offset += 1
+        }
                 
         grid(grid)
         
@@ -164,14 +179,27 @@ abstract class MapScreen extends Screen {
         var result = super.onMouseDown(x, y)
         val point = new Point(x, y)
         
-        dock left() foreach(s => {
-            val view = ship(s size, s orientation)
+        val left = dock left
+        val length = left.length
+        var lastSize: ShipSize = null
+        var offset = 0
+        
+        for (i <- 0 until length) {
+            val s = left(i)
+            if (lastSize != s.size) {
+                lastSize = s.size
+                offset = 0
+            }
+            
+            val view = ship(s size, s orientation, offset)
             if(view.bounds contains(point)) {
                 s.point = point
                 dock onShipDrag(s)
                 result = true
             }
-        })
+            
+            offset += 1
+        }
         
         return result
     }

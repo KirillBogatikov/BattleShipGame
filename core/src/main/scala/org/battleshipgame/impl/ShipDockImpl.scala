@@ -5,8 +5,10 @@ import org.battleshipgame.ui.{Ship, ShipSize, ShipOrientation, ShipsDock}
 import org.battleshipgame.ui.ShipOrientation._
 import org.battleshipgame.render.{Rectangle, Size, Point}
 import org.battleshipgame.core.RenderListener
+import scala.util.control.Breaks
 
 class ShipDockImpl extends ShipsDock {
+    private var draggedIndex: Int = 0
     private var dragged: Ship = _
 	private var placedShips: Array[Ship] = Array()
 	private var leftShips: Array[Ship] = Array()
@@ -46,35 +48,54 @@ class ShipDockImpl extends ShipsDock {
 	override def draggedShip(): Ship = dragged
 	
 	override def dropShip(): Unit = {
+		highlighted = new Rectangle(0, 0, 10, 10)
+	    val buf = leftShips.toBuffer
+	    buf.insert(draggedIndex, dragged)
+	    leftShips = buf.toArray
 		dragged = null;
 	}
 
 	override def onShipDrag(ship: Ship): Unit = {
 		dragged = ship;
+		draggedIndex = leftShips.indexOf(dragged)
+		leftShips = removeShip(dragged, leftShips)
 	}
 
 	override def onShipDrop(x: Int, y: Int): Unit = {
 		var size = dragged.rect size
 				
-		if (x + size.width > 10 || y + size.height > 10) {
-			highlighted = new Rectangle(0, 0, 10, 10)
-		} else {
-			var option = placedShips find(ship => checkIntersects(ship, size, x, y))
+		var option = placedShips find(ship => checkIntersects(ship, size, x, y))
 				
-			if(option isDefined) {
-				highlighted = option.get area
-			} else {
-			    val ship = new Ship(dragged size, new Point(x, y), dragged orientation)
-				placedShips = placedShips:+ ship
-				
-			    val option = leftShips find(ship => ship.size.equals(dragged size))
-				if (option isDefined) {
-				    leftShips = removeShip(option get, leftShips)
-				}
+		if(option isDefined) {
+			highlighted = option.get area
+			
+			if (highlighted.start.x < 0) {
+			    highlighted.x = 0
+			    highlighted.width -= 1
 			}
+			
+			if (highlighted.start.y < 0) {
+			    highlighted.y = 0
+			    highlighted.height -= 1
+			}
+			
+			if (highlighted.end.x > 9) {
+			    highlighted.width -= 1
+			}
+			
+			if (highlighted.end.y > 9) {
+			    highlighted.height -= 1
+			}
+						
+    	    val buf = leftShips.toBuffer
+    	    buf.insert(draggedIndex, dragged)
+    	    leftShips = buf.toArray
+		} else {
+		    val ship = new Ship(dragged size, new Point(x, y), dragged orientation)
+			placedShips = placedShips:+ ship
 		}
 		
-		dropShip();
+		dragged = null;
 	}
 	
 	private def removeShip(ship: Ship, array: Array[Ship]): Array[Ship] = {
@@ -101,16 +122,33 @@ class ShipDockImpl extends ShipsDock {
 		
 		if (option isDefined) {
 		    placedShips = removeShip(option get, placedShips)
-			leftShips = leftShips:+ (option get)
+		    
+		    var index: Int = 0
+		    
+		    val breaks = new Breaks
+		    import breaks.{ break, breakable }
+		    
+		    breakable {
+		        leftShips foreach(ship => {
+		            index += 1
+		            if (ship.size == option.get.size) { 
+		                break
+		            }
+		        })
+		    }
+		    
+    	    val buf = leftShips.toBuffer
+    	    buf.insert(index, option.get)
+    	    leftShips = buf.toArray
 		}
 	}
 
-	override def invalid(): Rectangle = {
+	override def highlightedArea(): Rectangle = {
 		if (highlighted != null) {
 			val timeout = new Thread(() => {
 				try {
 					Thread sleep(3000L)
-					listener needRender
+					listener render
 				} catch {
 				    case _: Throwable => 
 				}

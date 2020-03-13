@@ -19,8 +19,8 @@ public class DesktopMapScreen extends MapScreen {
 	private ImageView backView, rotateView;
 	private TextView backLabel, rotateLabel;
 	private GridView userGrid;
-	private ImageView[] horizontalShipViews;
-	private ImageView[] verticalShipViews;
+	private ImageView[][] horizontalShipViews;
+	private ImageView[][] verticalShipViews;
 	private Button start;
 
 	public DesktopMapScreen(Image backImage, Image rotateImage, ShipDockImpl dock, StylesResolver styles, Renderer renderer) {
@@ -34,20 +34,48 @@ public class DesktopMapScreen extends MapScreen {
 		rotateView = new ImageView(885, 50, 50, 50, rotateImage);
 		rotateLabel = new TextView(720, 50, 150, 50, "ПОВЕРНУТЬ", 24.0, styles.darkTextColor());
 		
-		userGrid = new GridView(50, 90, 400, 400);
+		userGrid = new GridView(50, 120, 400, 400);
 		
-		horizontalShipViews = new ImageView[] {
-			new ImageView(654, 120, 160, 40, null),
-			new ImageView(654, 180, 122, 40, null),
-			new ImageView(654, 240, 80, 40, null),
-			new ImageView(654, 300, 40, 40, null)
+		horizontalShipViews = new ImageView[][] {
+			{
+				new ImageView(835, 315, 40, 40, null),
+				new ImageView(755, 315, 40, 40, null),
+				new ImageView(675, 315, 40, 40, null),
+				new ImageView(595, 315, 40, 40, null),
+			},
+			{
+				new ImageView(815, 240, 80, 40, null),
+				new ImageView(695, 240, 80, 40, null),
+				new ImageView(575, 240, 80, 40, null),
+			},
+			{
+				new ImageView(735, 165, 122, 40, null),
+				new ImageView(612, 165, 122, 40, null),
+			},
+			{
+				new ImageView(655, 90, 160, 40, null),
+			}
 		};
 		
-		verticalShipViews = new ImageView[] {
-			new ImageView(640, 140, 40, 160, null),
-			new ImageView(700, 177, 40, 122, null),
-			new ImageView(760, 220, 40, 80, null),
-			new ImageView(820, 260, 40, 40, null)
+		verticalShipViews = new ImageView[][] {
+			{
+				new ImageView(827, 100, 40, 40, null),
+				new ImageView(827, 175, 40, 40, null),
+				new ImageView(827, 235, 40, 40, null),
+				new ImageView(827, 310, 40, 40, null)
+			},
+			{
+				new ImageView(752, 75, 40, 80, null),
+				new ImageView(752, 175, 40, 80, null),
+				new ImageView(752, 275, 40, 80, null)
+			},
+			{
+				new ImageView(677, 93, 40, 122, null),
+				new ImageView(677, 216, 40, 122, null)
+			},
+			{
+				new ImageView(602, 135, 40, 160, null)
+			}
 		};
 	}
 	
@@ -106,10 +134,10 @@ public class DesktopMapScreen extends MapScreen {
 	}
 
 	@Override
-	public View ship(ShipSize size, ShipOrientation orientation) {
+	public View ship(ShipSize size, ShipOrientation orientation, int id) {
 		switch(orientation) {
-			case HORIZONTAL: return horizontalShipViews[4 - size.toInt()];
-			case VERTICAL: return verticalShipViews[4 - size.toInt()];
+			case HORIZONTAL: return horizontalShipViews[size.toInt() - 1][id];
+			case VERTICAL: return verticalShipViews[size.toInt() - 1][id];
 		}
 		return null;
 	}

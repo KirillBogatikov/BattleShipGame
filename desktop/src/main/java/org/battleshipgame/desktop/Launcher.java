@@ -7,9 +7,10 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 
-import org.battleshipgame.core.CoreListener;
 import org.battleshipgame.core.GameEngine;
+import org.battleshipgame.core.RemotePlayerListener;
 import org.battleshipgame.impl.ShipDockImpl;
+import org.battleshipgame.network.GameId;
 import org.battleshipgame.render.Image;
 import org.battleshipgame.render.Screen;
 import org.battleshipgame.render.StylesResolver;
@@ -18,11 +19,10 @@ import org.battleshipgame.ui.DesktopGameModeScreen;
 import org.battleshipgame.ui.DesktopGameScreen;
 import org.battleshipgame.ui.DesktopMapScreen;
 import org.battleshipgame.ui.DesktopStartScreen;
-import org.battleshipgame.ui.Ship;
 import org.cuba.log.Configurator;
 import org.cuba.log.Log;
 
-public class Launcher  {
+public class Launcher implements RemotePlayerListener {
 	private Log log;
 	
 	private SwingFrame frame;
@@ -30,9 +30,9 @@ public class Launcher  {
 	private SwingRenderer renderer;
 	private SwingMouseListener mouseListener;
 	private SwingKeyListener keyListener;
-	private Image backImage;
+	private Image backImage, ringImage;
 	
-	private ShipDockImpl shipsDock;
+	private ShipDockImpl shipsDock = null;
 	private GameEngine gameEngine = null;
 	
 	public Launcher() throws IOException {
@@ -59,21 +59,22 @@ public class Launcher  {
 		keyListener = new SwingKeyListener(frame);
 		
 		backImage = loadImage("arrow_back.png");
+		ringImage = loadImage("ring.png");
 		
 		shipsDock = new ShipDockImpl(frame::repaint);
+		gameEngine = new GameEngine(log);
 	}
 	
 	private void showStartScreen() {
 		DesktopStartScreen startScreen = new DesktopStartScreen(styles, renderer);
-		startScreen.setClickListeners(this::showChooseModeScreen, System.out::println, System.out::println);	
+		startScreen.setClickListeners(this::showChooseModeScreen, () -> {}, () -> {});	
 		setScreen(startScreen);
 	}
 
 	private void showChooseModeScreen() {
 		DesktopGameModeScreen modeScreen = new DesktopGameModeScreen(backImage, styles, renderer);
 		modeScreen.setClickListeners(() -> {
-			initGame();
-			gameEngine.skynet();
+			gameEngine.startAI();
 			showMapScreen(false);
 		}, this::showConnectionScreen, this::showStartScreen);
 		setScreen(modeScreen);
@@ -82,11 +83,15 @@ public class Launcher  {
 	private void showConnectionScreen() {
 		DesktopConnectionScreen connScreen = new DesktopConnectionScreen(backImage, styles, renderer);
 		connScreen.setClickListeners(() -> {
-			initGame();
-			gameEngine.connect(connScreen.gameId().text());
+			gameEngine.startMultiPlayer(this);
+			gameEngine.connectToFriend(connScreen.inputs()[0].text(), connScreen.inputs()[1].text());
 		}, () -> {
-			initGame();
-			connScreen.gameId().text_$eq(gameEngine.gameId());
+			gameEngine.startMultiPlayer(this);
+			
+			GameId gameId = gameEngine.gameId();
+			connScreen.inputs()[0].text_$eq(gameId.hash());
+			connScreen.inputs()[1].text_$eq(gameId.connection());
+			
 			connScreen.setLoading(true);
 		}, this::showChooseModeScreen);
 		setScreen(connScreen);
@@ -95,30 +100,15 @@ public class Launcher  {
 	private void showMapScreen(boolean online) {
 		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), shipsDock, styles, renderer);
 		mapScreen.setClickListeners(() -> {
-			gameEngine.playerBay().ships_$eq(shipsDock.placed());
+			gameEngine.user().bay().ships_$eq(shipsDock.placed());
 			showGameScreen();
 		}, online ? this::showConnectionScreen : this::showChooseModeScreen, frame::repaint);
 		setScreen(mapScreen);
 	}
 	
-	private void initGame() {
-		gameEngine = new GameEngine(new Ship[0], log, new CoreListener() {
-			public void onConnected(boolean client) {
-				showMapScreen(true);
-			}
-			
-		    public void onGameEnd(boolean win) {
-		    	
-		    }
-		});
-	}
-	
 	private void showGameScreen() {
-		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, gameEngine, styles, renderer);
-		gameScreen.setClickListeners(() -> {
-			System.out.println("YOU LOSE");
-			System.exit(0);
-		});
+		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, ringImage, gameEngine, styles, renderer);
+		gameScreen.setClickListeners(this::onGameLose);
 		setScreen(gameScreen);
 		
 		Thread t = new Thread(() -> {
@@ -155,5 +145,29 @@ public class Launcher  {
 	public static void main(String[] args) throws IOException {
 		Launcher launcher = new Launcher();
 		launcher.showStartScreen();
+	}
+
+	@Override
+	public void onGameWin() {
+		log.d("Desktop", "You win!");
+		System.exit(0);
+	}
+
+	@Override
+	public void onGameLose() {
+		log.d("Desktop", "You lose!");
+		System.exit(0);
+	}
+
+	@Override
+	public void onFriendConnected() {
+		log.d("Desktop", "Friend connected!");
+		showMapScreen(true);
+	}
+
+	@Override
+	public void onConnectedToFriend() {
+		log.d("Desktop", "Connected to friend!");
+		showMapScreen(true);
 	}
 }

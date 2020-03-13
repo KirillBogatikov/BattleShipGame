@@ -46,7 +46,7 @@ public class DesktopStartScreen extends StartScreen {
 
 	@Override
 	public Button[] buttons() {
-		return new Button[]{ startGame, continueGame, settings, exit };
+		return new Button[]{ startGame/*, continueGame, settings*/, exit };
 	}
 	
 	@Override

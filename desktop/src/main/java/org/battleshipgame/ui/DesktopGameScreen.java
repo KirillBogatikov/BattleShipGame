@@ -17,9 +17,14 @@ public class DesktopGameScreen extends GameScreen {
 	private TextView backLabel;
 	private TextView timerLabel;
 	private GameEngine engine;
+	
+	private boolean locked;
+	private TextView lockerText;
+	private ImageView lockerImage;
+	
 	private GridView playerView, friendView;
 	
-	public DesktopGameScreen(Image backImage, GameEngine engine, StylesResolver styles, Renderer renderer) {
+	public DesktopGameScreen(Image backImage, Image lockerImage, GameEngine engine, StylesResolver styles, Renderer renderer) {
 		this.engine = engine;
 		this.styles = styles;
 		this.renderer = renderer;
@@ -29,6 +34,10 @@ public class DesktopGameScreen extends GameScreen {
 		timerLabel = new TextView(280, 50, 400, 50, "00:00", 24.0, styles.darkTextColor());
 		playerView = new GridView(50, 90, 400, 400);
 		friendView = new GridView(513, 90, 400, 400);
+		
+		engine.user().listener_$eq((x, y, r, f, a) -> {
+		    locked = false;
+		});
 	}
 	
 	public void setClickListeners(ClickListener back) {
@@ -63,12 +72,12 @@ public class DesktopGameScreen extends GameScreen {
 	
 	@Override
 	public Bay userBay() {
-		return engine.playerBay();
+		return engine.user().bay();
 	}
 
 	@Override
 	public Bay opponentBay() {
-		return engine.friendBay();
+		return engine.friend().bay();
 	}
 
 	@Override
@@ -79,6 +88,24 @@ public class DesktopGameScreen extends GameScreen {
 	@Override
 	public GridView opponentView() {
 		return friendView;
+	}
+
+	@Override
+	public ShotListener shotListener() {
+		return (x, y) -> {
+			locked = true;
+			engine.user().shotListener().onShot(x, y);
+		};
+	}
+
+	@Override
+	public ImageView lockerImage() {
+		return locked ? lockerImage : null;
+	}
+
+	@Override
+	public TextView lockerText() {
+		return lockerText;
 	}
 
 }

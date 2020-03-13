@@ -29,7 +29,7 @@ case class Size(var width: Int, var height: Int) {}
  * @version 1.0
  * @since 2.0.0
  */
-class Rectangle(var x: Int, var y: Int, 
+case class Rectangle(var x: Int, var y: Int, 
                 var width: Int, var height: Int) {
     
     /**

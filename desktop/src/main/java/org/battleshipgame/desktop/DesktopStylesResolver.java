@@ -75,8 +75,13 @@ public class DesktopStylesResolver implements StylesResolver {
 	}
 
 	@Override
-	public long linesColor() {
-		return buttonDefault();
+	public long linesColorDefault() {
+		return 0xFF1060BD;
+	}
+
+	@Override
+	public long linesColorFocused() {
+		return 0xFF1683FF;
 	}
 	
 	@Override
@@ -90,10 +95,20 @@ public class DesktopStylesResolver implements StylesResolver {
 	}
 
 	@Override
-	public long inputBackground() {
+	public long inputBackgroundDefault() {
 		return 0x400D4E99;
 	}
 
+	@Override
+	public long inputBackgroundFocused() {
+		return 0x401683FF;
+	}
+
+	@Override
+	public long lockerColor() {
+		return 0xB0FFFFFF;
+	}
+	
 	@Override
 	public long highlightBackground() {
 		return 0x407F0000;

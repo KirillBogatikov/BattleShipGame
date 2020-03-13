@@ -29,14 +29,17 @@ trait Screen extends InputListener {
      * Массив кнопочек, для изи-рисовки
      */
     def buttons(): Array[Button] = Array()
+    
     /**
      * Массив картинок, для изи-рисовки
      */
     def images(): Array[ImageView] = Array()
+    
     /**
      * Массив надписей, для изи-рисовки
      */
     def labels(): Array[TextView] = Array()
+    
     /**
      * Массив полей ввода, тоже для изи-рисовки
      */
@@ -98,8 +101,13 @@ trait Screen extends InputListener {
         renderer stroke(true)
         renderer stroke(styles strokeSize)
         
-        renderer fill(styles inputBackground)
-        renderer stroke(styles linesColor)
+        if (input focused) {
+            renderer fill(styles inputBackgroundFocused)
+            renderer stroke(styles linesColorFocused)
+        } else {
+            renderer fill(styles inputBackgroundDefault)
+            renderer stroke(styles linesColorDefault)
+        }
         
         var textColor: Long = 0
         if (input.textColor == Long.MaxValue) {
@@ -122,7 +130,7 @@ trait Screen extends InputListener {
         renderer fill(true)
         renderer stroke(true)
         
-        renderer fill(styles inputBackground)
+        renderer fill(styles inputBackgroundDefault)
         renderer stroke(styles buttonDefault)
         renderer stroke(styles strokeSize)
         
@@ -175,19 +183,9 @@ trait Screen extends InputListener {
                 //BACKSPACE <-
                 if (cursor > 0) {
                     input.cursorPosition -= 1
-                    val left = text substring(0, cursor) 
-                    val right = text substring(cursor + 1)
-                                    
-                    text = left + right
-                }
-            } else if (key == 127) {
-                //DELETE del
-                if (cursor < text.length - 1) {
-                    val left = text substring(0, cursor)
-                    val right = text substring(cursor + 1)
-                    input.cursorPosition -= 1
-                                    
-                    text = left + right
+                    val builder = new StringBuilder(text)
+                    builder deleteCharAt(input cursorPosition)
+                    text = builder toString
                 }
             } else {
                 input.cursorPosition += 1
@@ -198,7 +196,7 @@ trait Screen extends InputListener {
             //апдейт
             input text = text
             
-            true
+            return true
         }
         
         false
@@ -212,6 +210,10 @@ trait Screen extends InputListener {
         val point = new Point(x, y)
         
         val prevent = inputs find(view => view.focused)
+        if (prevent isDefined) {
+            prevent.get focused = false
+        }
+        
         val btn = buttons find(view => view.bounds contains(point))
         
         if (btn isDefined) {
@@ -221,21 +223,17 @@ trait Screen extends InputListener {
                 prevent.get focused = false
             }
             
-            true
+            return true
         }
         
         val current = inputs find(view => view.bounds contains(point))
         if (current isDefined) {
             current.get focused = true
-            
-            if (prevent isDefined) {
-                prevent.get focused = false
-            }
-            
-            true
+               
+            return true
         }
         
-        false
+        prevent isDefined
     }
     
     /**

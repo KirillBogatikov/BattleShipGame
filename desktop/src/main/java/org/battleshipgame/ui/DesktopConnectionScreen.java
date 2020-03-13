@@ -17,7 +17,7 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 	private TextView loadingLabel;
 	private TextView backLabel;
 	private TextView screenLabel;
-	private TextView gameId;
+	private TextView hash, address;
 	private boolean loading;
 	
 	public DesktopConnectionScreen(Image backImage, StylesResolver styles, Renderer renderer) {
@@ -30,7 +30,8 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 		backLabel = new TextView(75, 50, 100, 50, "НАЗАД", 24.0, styles.darkTextColor());
 		screenLabel = new TextView(280, 50, 400, 50, "СЕТЕВАЯ ИГРА", 24.0, styles.darkTextColor());
 		loadingLabel = new TextView(355, 320, 250, 60, "ОЖИДАНИЕ ИГРОКА", 24.0, styles.darkTextColor());
-		gameId = new TextView(230, 200, 500, 60, "", 24.0, 20.0);
+		hash = new TextView(230, 200, 175, 60, "", 24.0, 20.0);
+		address = new TextView(430, 200, 300, 60, "", 24.0, 20.0);
 	}
 	
 	public void setClickListeners(ClickListener connect, ClickListener create, ClickListener back) {
@@ -42,11 +43,6 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 	
 	public void setLoading(boolean loading) {
 		this.loading = loading;
-	}
-	
-	@Override
-	public TextView gameId() {
-		return super.gameId();
 	}
 	
 	@Override
@@ -79,7 +75,7 @@ public class DesktopConnectionScreen extends ConnectionScreen {
 
 	@Override
 	public TextView[] inputs() {
-		return new TextView[] { gameId };
+		return new TextView[] { hash, address };
 	}
 
 	@Override

@@ -1,19 +1,17 @@
 package org.battleshipgame.ui
 
 import scala.language.postfixOps
-import org.battleshipgame.render.{Screen, Point, Rectangle, GridView, Size, Image }
+import org.battleshipgame.render.{Screen, Point, Rectangle, GridView, Size, Image, ImageView, TextView }
 import scala.collection.mutable.Buffer
 
 trait ShotListener {
     def onShot(x: Int, y: Int): Unit
 }
 
-class Bay(var listener: ShotListener = (x: Int, y: Int) => {},
-          var ships: Array[Ship] = Array(),
+class Bay(var ships: Array[Ship] = Array(),
           var wrecks: Array[Point] = Array(),
           var flames: Array[Point] = Array(),
-          var misses: Array[Point] = Array(),
-          var locked: Boolean = false) {
+          var misses: Array[Point] = Array()) {
     
     def ship(index: Int): Unit = {
         var buf = ships.toBuffer
@@ -39,9 +37,14 @@ abstract class GameScreen extends Screen {
     def opponentBay(): Bay
     def userView(): GridView
     def opponentView(): GridView
+    def shotListener(): ShotListener
+    def lockerImage(): ImageView
+    def lockerText(): TextView
     
     override def render(): Unit = {
         super.render();
+        
+        println(if (lockerImage == null) "ready" else "locked")
         
         renderer begin()
         
@@ -53,24 +56,32 @@ abstract class GameScreen extends Screen {
         
         renderBay(opponentBay, opponentView)
         
+        if (lockerImage != null) {
+            renderer fill(true)
+            renderer fill(styles lockerColor)
+            renderer stroke(false)
+            renderer rectangle(new Rectangle(Point(0, 0), size), 0.0)
+            
+            label(lockerText)
+            
+            renderer image(lockerImage bounds, lockerImage image)
+        }
+        
         renderer end()
     }
     
     override def onClick(x: Int, y: Int): Boolean = {
         val result = super.onClick(x, y)
         
-        if (userBay.locked || opponentBay.locked) {
+        if (lockerImage != null) {
             return result
         }
         
         if (!result) {
             val point = new Point(x, y)
-            if (userView.bounds contains(point)) {
-                val rel = userView toGridCoords(point)
-                userBay.listener onShot(rel x, rel y)
-            } else if (opponentView.bounds contains(point)) {
+            if (opponentView.bounds contains(point)) {
                 val rel = opponentView toGridCoords(point)
-                opponentBay.listener onShot(rel x, rel y)
+                shotListener onShot(rel x, rel y)
             }
         }
         

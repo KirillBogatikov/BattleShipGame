@@ -48,12 +48,27 @@ trait StylesResolver {
     /**
      * Цвет линий
      */
-    def linesColor(): Long
+    def linesColorDefault(): Long
+    
+    /**
+     * Цвет линий
+     */
+    def linesColorFocused(): Long
     
     /**
      * Фон текстового поля
      */
-    def inputBackground(): Long
+    def inputBackgroundDefault(): Long
+    
+    /**
+     * Фон текстового поля
+     */
+    def inputBackgroundFocused(): Long
+    
+    /**
+     * Фон экрана блокировки
+     */
+    def lockerColor(): Long
     
     /**
      * Фон подсвеченной зоны
