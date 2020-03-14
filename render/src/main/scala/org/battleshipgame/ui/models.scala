@@ -17,12 +17,10 @@ import org.battleshipgame.ui.ShipOrientation.HORIZONTAL
  */
 case class Ship(val size: ShipSize, var point: Point, var orientation: ShipOrientation) {
     var totalDamage: Int = 0
-    var damaged: Array[Point] = Array()
     
     def this(size: ShipSize) = this(size, new Point(0, 0), HORIZONTAL)
     
     def damage(point: Point): Int = {
-        damaged = damaged:+ point
         totalDamage += 1
         return totalDamage
     }

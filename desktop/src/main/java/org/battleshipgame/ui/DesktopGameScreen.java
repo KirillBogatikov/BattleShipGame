@@ -1,6 +1,9 @@
 package org.battleshipgame.ui;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.battleshipgame.core.GameEngine;
+import org.battleshipgame.core.ShotResult;
 import org.battleshipgame.render.ClickListener;
 import org.battleshipgame.render.GridView;
 import org.battleshipgame.render.Image;
@@ -18,7 +21,7 @@ public class DesktopGameScreen extends GameScreen {
 	private TextView timerLabel;
 	private GameEngine engine;
 	
-	private boolean locked;
+	private AtomicBoolean locked = new AtomicBoolean(false);
 	private TextView lockerText;
 	private ImageView lockerImage;
 	
@@ -35,8 +38,18 @@ public class DesktopGameScreen extends GameScreen {
 		playerView = new GridView(50, 90, 400, 400);
 		friendView = new GridView(513, 90, 400, 400);
 		
+		lockerText = new TextView(230, 440, 500, 50, "ОЖИДАНИЕ ХОДА ВТОРОГО ИГРОКА...", 24.0, styles.darkTextColor());
+		this.lockerImage = new ImageView(330, 120, 300, 300, lockerImage);
+		
+		engine.friend().listener_$eq((x, y, r, f, a) -> {
+			if(r == ShotResult.MISS) {
+				locked.set(false);
+			}
+		});
 		engine.user().listener_$eq((x, y, r, f, a) -> {
-		    locked = false;
+		    if(r != ShotResult.MISS) {
+		    	locked.set(false);
+		    }
 		});
 	}
 	
@@ -67,7 +80,7 @@ public class DesktopGameScreen extends GameScreen {
 	
 	@Override
 	public TextView[] labels() {
-		return new TextView[] { backLabel, timerLabel };
+		return new TextView[] { backLabel };
 	}
 	
 	@Override
@@ -89,18 +102,28 @@ public class DesktopGameScreen extends GameScreen {
 	public GridView opponentView() {
 		return friendView;
 	}
+	
+	@Override
+	public TextView timer() {
+		return timerLabel;
+	}
 
+	@Override
+	public boolean disposed() {
+		return false;
+	}
+	
 	@Override
 	public ShotListener shotListener() {
 		return (x, y) -> {
-			locked = true;
-			engine.user().shotListener().onShot(x, y);
+			locked.set(true);
+			engine.user().shotFriend(x, y);
 		};
 	}
 
 	@Override
 	public ImageView lockerImage() {
-		return locked ? lockerImage : null;
+		return locked.get() ? lockerImage : null;
 	}
 
 	@Override

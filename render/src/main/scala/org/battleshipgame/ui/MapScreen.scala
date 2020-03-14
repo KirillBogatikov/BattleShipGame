@@ -110,10 +110,12 @@ abstract class MapScreen extends Screen {
                 offset = 0
             }
             
-            val img = styles ship(ship size, ship orientation)
-            val view = this ship(ship size, ship orientation, offset)
-            renderer image(view bounds, img)
-                        
+            if (ship != dock.draggedShip) {
+                val img = styles ship(ship size, ship orientation)
+                val view = this ship(ship size, ship orientation, offset)
+                renderer image(view bounds, img)
+            }                
+            
             offset += 1
         }
                 

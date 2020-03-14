@@ -35,23 +35,28 @@ class AI(friend: Player) extends Player(friend) {
     
     private val random = new Random()
     
-    def placeShips(): Unit = {
-        bay.ships = Array(
-            new Ship(TORPEDO,   new Point(0, 0), VERTICAL),
-            new Ship(TORPEDO,   new Point(6, 2), VERTICAL),
-            new Ship(TORPEDO,   new Point(1, 8), HORIZONTAL),
-            new Ship(TORPEDO,   new Point(3, 9), HORIZONTAL),
-            new Ship(DESTROYER, new Point(2, 0), HORIZONTAL),
-            new Ship(DESTROYER, new Point(8, 8), VERTICAL),
-            new Ship(DESTROYER, new Point(0, 5), VERTICAL),
-            new Ship(CRUISER,   new Point(2, 2), VERTICAL),
-            new Ship(CRUISER,   new Point(3, 7), HORIZONTAL),
-            new Ship(WARSHIP,   new Point(5, 4), HORIZONTAL)
-        )
-    }
+    bay.ships = Array(
+        new Ship(TORPEDO,   new Point(0, 0), VERTICAL),
+        new Ship(TORPEDO,   new Point(6, 2), VERTICAL),
+        new Ship(TORPEDO,   new Point(1, 8), HORIZONTAL),
+        new Ship(TORPEDO,   new Point(3, 9), HORIZONTAL),
+        new Ship(DESTROYER, new Point(2, 0), HORIZONTAL),
+        new Ship(DESTROYER, new Point(8, 8), VERTICAL),
+        new Ship(DESTROYER, new Point(0, 5), VERTICAL),
+        new Ship(CRUISER,   new Point(2, 2), VERTICAL),
+        new Ship(CRUISER,   new Point(3, 7), HORIZONTAL),
+        new Ship(WARSHIP,   new Point(5, 4), HORIZONTAL)
+    )
     
-    def shotListener(): ShotListener = (x, y) => {
-        if (empty(x, y)) {
+    def shotListener(): ShotListener = (x, y) => { executor execute(() =>  {
+        try {
+            Thread.sleep(1500L);
+        } catch {
+            case e: Throwable => {}
+        }
+        println("AI: processing shot at " + x + ", " + y)
+        
+        if (occupied(x, y)) {
             friend.resultListener onShotResult(x, y, OCCUPIED)
         }
         
@@ -59,6 +64,7 @@ class AI(friend: Player) extends Player(friend) {
         
         var result = MISS
         var area: Rectangle = null
+        val flame = random.nextBoolean
         val breaks = new Breaks();
         import breaks.{ breakable, break }
         
@@ -66,81 +72,94 @@ class AI(friend: Player) extends Player(friend) {
             bay.ships foreach(ship => {
                 if (ship.rect contains(point)) {
                     ship.damage(point)
+                    println("AI: now damage is " + ship.totalDamage)
                     
-                    var result: ShotResult = null
                     if (ship.totalDamage == ship.size.toInt) {
                         result = KILL
-                        area = ship area
+                        area = ship.area
+                        shipAreaMisses(ship area)
                     } else {
                         result = HURT
                     }
+                    
+                    addWreck(point, flame)
                                         
                     break
                 }
             })
         }
-                
-        friend.resultListener onShotResult(x, y, result, random nextBoolean, area)
+        
+        friend.resultListener onShotResult(x, y, result, flame, area)
         if (result == MISS) {
+            bay miss(point)
             shot()
         }
-    }
+    }) }
     
     private def shot(): Unit = {
-        lastResult match {
-            case MISS => 
-            case KILL => {
-                currentX += 2
-                
-                if (currentX > 9) {
-                    currentX = 0
-                    currentY += 1
-                }
-            }
-            case OCCUPIED => { /* TODO */ }
-            case HURT => {
-                if (!topChecked && lastY > 0) { 
-                    topChecked = true
-                    lastY -= 1
-                } else if(!leftChecked && lastX > 0) {
-                    leftChecked = true
-                    lastX -= 1
-                } else if(!bottomChecked && lastY < 8) {
-                    bottomChecked = true
-                    lastY += 1
-                } else if(!rightChecked && lastX < 8) {
-                    rightChecked = true
-                    lastX += 1
-                } else {
-                    if (vectorFound) {
-                        if (leftVector) {
-                            lastX -= 1
-                        } else if(rightVector) {
-                            lastX += 1
-                        } else if(topVector) {
-                            lastY -= 1
-                        } else if(bottomVector) {
-                            lastY += 1
-                        }
+        try {
+            Thread.sleep(1500L);
+        } catch {
+            case e: Throwable => {}
+        }
+        /*if (lastResult != null) {
+            lastResult match {
+                case MISS => 
+                case KILL => {
+                    currentX += 2
+                    
+                    if (currentX > 9) {
+                        currentX = 0
+                        currentY += 1
                     }
                 }
-                
-                friend.shotListener onShot(lastX, lastY)
-                return
+                case OCCUPIED => { /* TODO */ }
+                case HURT => {
+                    if (!topChecked && lastY > 0) { 
+                        topChecked = true
+                        lastY -= 1
+                    } else if(!leftChecked && lastX > 0) {
+                        leftChecked = true
+                        lastX -= 1
+                    } else if(!bottomChecked && lastY < 8) {
+                        bottomChecked = true
+                        lastY += 1
+                    } else if(!rightChecked && lastX < 8) {
+                        rightChecked = true
+                        lastX += 1
+                    } else {
+                        if (vectorFound) {
+                            if (leftVector) {
+                                lastX -= 1
+                            } else if(rightVector) {
+                                lastX += 1
+                            } else if(topVector) {
+                                lastY -= 1
+                            } else if(bottomVector) {
+                                lastY += 1
+                            }
+                        }
+                    }
+                    
+                    friend.shotListener onShot(lastX, lastY)
+                    return
+                }
             }
-        }
+        }*/
         
         currentX += 2
         
         if (currentX > 9) {
-            currentX = 0
+            currentX = currentY % 2
             currentY += 1
         }
         
+        println("AI: shot friend at " + currentX + ", " + currentY)
         friend.shotListener onShot(currentX, currentY)
     }
      
     def resultListener(): ShotResultListener = (x, y, r, f, a) => {
+        println("AI: shot result at " + x +", " + y + ": " + r)
         if (r == HURT) {
             shot()
         } else if(r == MISS) {
@@ -190,6 +209,7 @@ class AI(friend: Player) extends Player(friend) {
         }
         
         lastResult = r
+        listener.onShotResult(x, y, r, f, a)
     }
         
 }

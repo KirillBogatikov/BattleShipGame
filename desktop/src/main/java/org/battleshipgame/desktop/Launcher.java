@@ -101,12 +101,12 @@ public class Launcher implements RemotePlayerListener {
 		DesktopMapScreen mapScreen = new DesktopMapScreen(backImage, loadImage("rotate.png"), shipsDock, styles, renderer);
 		mapScreen.setClickListeners(() -> {
 			gameEngine.user().bay().ships_$eq(shipsDock.placed());
-			showGameScreen();
+			showGameScreen(online);
 		}, online ? this::showConnectionScreen : this::showChooseModeScreen, frame::repaint);
 		setScreen(mapScreen);
 	}
 	
-	private void showGameScreen() {
+	private void showGameScreen(boolean online) {
 		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, ringImage, gameEngine, styles, renderer);
 		gameScreen.setClickListeners(this::onGameLose);
 		setScreen(gameScreen);
@@ -116,6 +116,13 @@ public class Launcher implements RemotePlayerListener {
 				try {
 					frame.repaint();
 					Thread.sleep(100L);
+
+					if (!online && !gameEngine.friend().hasWholeShips()) {
+						onGameWin();
+					} else if(!gameEngine.user().hasWholeShips()) {
+						onGameLose();
+					}
+					
 				} catch(Exception e) {
 					e.printStackTrace();
 				}

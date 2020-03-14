@@ -8,7 +8,6 @@ import org.battleshipgame.core.RenderListener
 import scala.util.control.Breaks
 
 class ShipDockImpl extends ShipsDock {
-    private var draggedIndex: Int = 0
     private var dragged: Ship = _
 	private var placedShips: Array[Ship] = Array()
 	private var leftShips: Array[Ship] = Array()
@@ -49,16 +48,11 @@ class ShipDockImpl extends ShipsDock {
 	
 	override def dropShip(): Unit = {
 		highlighted = new Rectangle(0, 0, 10, 10)
-	    val buf = leftShips.toBuffer
-	    buf.insert(draggedIndex, dragged)
-	    leftShips = buf.toArray
 		dragged = null;
 	}
 
 	override def onShipDrag(ship: Ship): Unit = {
 		dragged = ship;
-		draggedIndex = leftShips.indexOf(dragged)
-		leftShips = removeShip(dragged, leftShips)
 	}
 
 	override def onShipDrop(x: Int, y: Int): Unit = {
@@ -86,13 +80,10 @@ class ShipDockImpl extends ShipsDock {
 			if (highlighted.end.y > 9) {
 			    highlighted.height -= 1
 			}
-						
-    	    val buf = leftShips.toBuffer
-    	    buf.insert(draggedIndex, dragged)
-    	    leftShips = buf.toArray
 		} else {
 		    val ship = new Ship(dragged size, new Point(x, y), dragged orientation)
 			placedShips = placedShips:+ ship
+			leftShips = removeShip(dragged, leftShips)
 		}
 		
 		dragged = null;

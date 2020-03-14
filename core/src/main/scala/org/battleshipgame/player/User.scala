@@ -9,11 +9,12 @@ import scala.util.control.Breaks
 import scala.util.Random
 
 class User extends Player(null) {
-    var listener: ShotResultListener = null
     private val random = new Random()
     
     def shotListener(): ShotListener = (x, y) => {
-        if (empty(x, y)) {
+        println("USER: processing shot at " + x + ", " + y)
+        
+        if (occupied(x, y)) {
             friend.resultListener onShotResult(x, y, OCCUPIED)
         }
         
@@ -21,6 +22,7 @@ class User extends Player(null) {
         
         var result = MISS
         var area: Rectangle = null
+        val flame = random nextBoolean
         val breaks = new Breaks();
         import breaks.{ breakable, break }
         
@@ -29,35 +31,40 @@ class User extends Player(null) {
                 if (ship.rect contains(point)) {
                     ship.damage(point)
                     
-                    var result: ShotResult = null
                     if (ship.totalDamage == ship.size.toInt) {
                         result = KILL
-                        area = ship area
+                        area = ship.area
+                        shipAreaMisses(area)
                     } else {
                         result = HURT
                     }
+                    
+                    addWreck(point, flame)
                                         
                     break
                 }
             })
         }
         
-        friend.resultListener onShotResult(x, y, result, random nextBoolean, area)
+        if (result == MISS) {
+            bay miss(point)
+        }
+        
+        friend.resultListener onShotResult(x, y, result, flame, area)
     }
     
     def shotFriend(x: Int, y: Int): Unit = {
+        println("USER: shot friend at " + x +", " + y)
         friend.shotListener onShot(x, y)
     }
     
     def resultListener(): ShotResultListener = (x, y, r, f, a) => {
+        println("USER: shot result at " + x +", " + y + ": " + r)
         val point = Point(x, y)
         r match {
-            case MISS => bay.misses = bay.misses:+ point
-            case HURT => addWreck(point, f)
-            case KILL => {
-                addWreck(point, f)
-                shipAreaMisses(a)
-            }
+            case MISS => {}
+            case HURT => {}
+            case KILL => {}
             case OCCUPIED => { /* TODO */ }
         }
         listener.onShotResult(x, y, r, f, a)

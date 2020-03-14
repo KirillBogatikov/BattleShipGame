@@ -33,6 +33,7 @@ class Bay(var ships: Array[Ship] = Array(),
 }
 
 abstract class GameScreen extends Screen {
+    def disposed(): Boolean
     def userBay(): Bay
     def opponentBay(): Bay
     def userView(): GridView
@@ -40,12 +41,45 @@ abstract class GameScreen extends Screen {
     def shotListener(): ShotListener
     def lockerImage(): ImageView
     def lockerText(): TextView
+    def timer(): TextView
+    
+    private val timerThread = new Thread(() => {
+        var time = 0;
+        while (!disposed) {
+            if (timer != null) {
+                time += 1;
+                
+                val m = time / 60
+                val s = time % 60
+                var ms, ss: String = null
+                
+                if (m < 10) {
+                    ms = "0" + m
+                } else {
+                    ms = m toString
+                }
+                
+                if (s < 10) {
+                    ss = "0" + s
+                } else {
+                    ss = s toString
+                }
+                
+                timer text = (ms + ":" + ss)
+            }
+            
+            try {
+                Thread.sleep(1000L);                
+            } catch {
+                case _ : Throwable => {}
+            }
+        }
+    })
+    timerThread.start()
     
     override def render(): Unit = {
         super.render();
-        
-        println(if (lockerImage == null) "ready" else "locked")
-        
+                
         renderer begin()
         
         grid(userView)
@@ -66,6 +100,8 @@ abstract class GameScreen extends Screen {
             
             renderer image(lockerImage bounds, lockerImage image)
         }
+        
+        label(timer)
         
         renderer end()
     }

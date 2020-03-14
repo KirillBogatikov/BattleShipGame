@@ -6,9 +6,12 @@ trait RenderListener {
 	def render(): Unit
 }
 
-trait RemotePlayerListener {
+trait GameResultListener {
     def onGameWin(): Unit
     def onGameLose(): Unit
+}
+
+trait RemotePlayerListener extends GameResultListener {
     def onFriendConnected(): Unit
     def onConnectedToFriend(): Unit
 }
