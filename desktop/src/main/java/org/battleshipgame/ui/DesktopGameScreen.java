@@ -26,6 +26,7 @@ public class DesktopGameScreen extends GameScreen {
 	private ImageView lockerImage;
 	
 	private GridView playerView, friendView;
+	private boolean disposed = false;
 	
 	public DesktopGameScreen(Image backImage, Image lockerImage, GameEngine engine, StylesResolver styles, Renderer renderer) {
 		this.engine = engine;
@@ -110,7 +111,11 @@ public class DesktopGameScreen extends GameScreen {
 
 	@Override
 	public boolean disposed() {
-		return false;
+		return disposed;
+	}
+	
+	public void disposed(boolean disposed) {
+		this.disposed = disposed;
 	}
 	
 	@Override

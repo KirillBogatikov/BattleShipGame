@@ -18,6 +18,7 @@ import org.battleshipgame.ui.DesktopConnectionScreen;
 import org.battleshipgame.ui.DesktopGameModeScreen;
 import org.battleshipgame.ui.DesktopGameScreen;
 import org.battleshipgame.ui.DesktopMapScreen;
+import org.battleshipgame.ui.DesktopResultScreen;
 import org.battleshipgame.ui.DesktopStartScreen;
 import org.cuba.log.Configurator;
 import org.cuba.log.Log;
@@ -34,6 +35,7 @@ public class Launcher implements RemotePlayerListener {
 	
 	private ShipDockImpl shipsDock = null;
 	private GameEngine gameEngine = null;
+	private DesktopGameScreen gameScreen = null;
 	
 	public Launcher() throws IOException {
 		log = new Log(Configurator.system().build());
@@ -107,12 +109,12 @@ public class Launcher implements RemotePlayerListener {
 	}
 	
 	private void showGameScreen(boolean online) {
-		DesktopGameScreen gameScreen = new DesktopGameScreen(backImage, ringImage, gameEngine, styles, renderer);
+		gameScreen = new DesktopGameScreen(backImage, ringImage, gameEngine, styles, renderer);
 		gameScreen.setClickListeners(this::onGameLose);
 		setScreen(gameScreen);
 		
 		Thread t = new Thread(() -> {
-			while(true) {
+			while(!gameScreen.disposed()) {
 				try {
 					frame.repaint();
 					Thread.sleep(100L);
@@ -153,17 +155,28 @@ public class Launcher implements RemotePlayerListener {
 		Launcher launcher = new Launcher();
 		launcher.showStartScreen();
 	}
+	
+	private void showResultScreen(boolean win) {
+		gameScreen.disposed(true);
+		DesktopResultScreen screen = new DesktopResultScreen(win, gameScreen.minutes(), gameScreen.seconds(), styles, renderer, () -> {
+			showStartScreen();
+			shipsDock = new ShipDockImpl(frame::repaint);
+			gameEngine = new GameEngine(log);
+			gameScreen = null;
+		});
+		setScreen(screen);
+	}
 
 	@Override
 	public void onGameWin() {
 		log.d("Desktop", "You win!");
-		System.exit(0);
+		showResultScreen(true);
 	}
 
 	@Override
 	public void onGameLose() {
 		log.d("Desktop", "You lose!");
-		System.exit(0);
+		showResultScreen(false);
 	}
 
 	@Override

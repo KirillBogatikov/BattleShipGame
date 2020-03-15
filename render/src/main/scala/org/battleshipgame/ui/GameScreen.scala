@@ -43,26 +43,28 @@ abstract class GameScreen extends Screen {
     def lockerText(): TextView
     def timer(): TextView
     
+    var minutes, seconds: Int = 0
+    
     private val timerThread = new Thread(() => {
         var time = 0;
         while (!disposed) {
             if (timer != null) {
                 time += 1;
                 
-                val m = time / 60
-                val s = time % 60
+                minutes = time / 60
+                seconds = time % 60
                 var ms, ss: String = null
                 
-                if (m < 10) {
-                    ms = "0" + m
+                if (minutes < 10) {
+                    ms = "0" + minutes
                 } else {
-                    ms = m toString
+                    ms = minutes toString
                 }
                 
-                if (s < 10) {
-                    ss = "0" + s
+                if (seconds < 10) {
+                    ss = "0" + seconds
                 } else {
-                    ss = s toString
+                    ss = seconds toString
                 }
                 
                 timer text = (ms + ":" + ss)
