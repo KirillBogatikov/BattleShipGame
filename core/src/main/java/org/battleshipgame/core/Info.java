@@ -1,14 +1,13 @@
 package org.battleshipgame.core;
 
-import org.battleshipgame.geometry.Point;
-import org.battleshipgame.utils.Stream;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
+
+import org.battleshipgame.geometry.Point;
+import org.battleshipgame.utils.Stream;
 
 public class Info {
     private Set<Point> misses;

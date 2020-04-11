@@ -30,7 +30,6 @@ public class Stream<T> {
             return null;
         }
 
-        ArrayList<T> result = new ArrayList<>();
         for(T item : items) {
             if(predicate.apply(item)) {
                 return item;

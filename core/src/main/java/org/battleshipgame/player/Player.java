@@ -1,14 +1,13 @@
 package org.battleshipgame.player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.battleshipgame.core.Ship;
 import org.battleshipgame.geometry.Point;
 import org.battleshipgame.geometry.Rectangle;
 import org.battleshipgame.utils.Stream;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 public abstract class Player {
     private List<Point> wrecks, misses, flames;

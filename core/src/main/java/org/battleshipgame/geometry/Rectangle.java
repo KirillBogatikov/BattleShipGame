@@ -1,7 +1,5 @@
 package org.battleshipgame.geometry;
 
-import static java.util.Arrays.asList;
-
 public class Rectangle {
     public Point start;
     public Point end;

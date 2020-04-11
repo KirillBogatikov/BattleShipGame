@@ -1,18 +1,13 @@
 package org.battleshipgame.player;
 
-import org.battleshipgame.core.Ship;
-import org.battleshipgame.geometry.Point;
+import static java.util.Arrays.asList;
+import static org.battleshipgame.core.ShipOrientation.Y_AXIS;
+import static org.battleshipgame.core.ShipSize.TORPEDO;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.battleshipgame.core.ShipOrientation.X_AXIS;
-import static org.battleshipgame.core.ShipOrientation.Y_AXIS;
-import static org.battleshipgame.core.ShipSize.CRUISER;
-import static org.battleshipgame.core.ShipSize.DESTROYER;
-import static org.battleshipgame.core.ShipSize.TORPEDO;
-import static org.battleshipgame.core.ShipSize.WARSHIP;
+import org.battleshipgame.core.Ship;
+import org.battleshipgame.geometry.Point;
 
 public class AI extends Player {
     private List<Ship> ships;
