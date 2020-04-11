@@ -1,0 +1,7 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'org.cuba:logging:1.1.0-SNAPSHOT'
+
+}
