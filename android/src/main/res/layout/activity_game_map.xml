@@ -115,4 +115,15 @@
         android:visibility="gone"
         android:text="начать игру"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <include layout="@layout/report_button"/>
+
+    </LinearLayout>
+
 </RelativeLayout>

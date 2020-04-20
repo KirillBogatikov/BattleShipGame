@@ -45,4 +45,6 @@
         android:textSize="25sp"
         android:text="v. 2.1"/>
 
+    <include layout="@layout/report_button"/>
+
 </RelativeLayout>

@@ -26,4 +26,6 @@
         android:text="сетевая\nигра"
         android:onClick="multiPlayer"/>
 
+    <include layout="@layout/report_button"/>
+
 </RelativeLayout>

@@ -11,7 +11,6 @@ import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.View.*
-import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -36,7 +35,7 @@ class GameMapActivity : StandardActivity() {
         setContentView(R.layout.activity_game_map)
 
         val h = Handler()
-        val dragListener = OnDragListener { v, e ->
+        val dragListener = OnDragListener { _, e ->
             if (e.action == DragEvent.ACTION_DRAG_ENDED && draggedShip != null) {
                 val ey = e.y - getStatusBarHeight()
                 if (e.x < map.left || e.x > map.left + map.width ||
@@ -102,9 +101,9 @@ class GameMapActivity : StandardActivity() {
                         shipView.visibility = VISIBLE
                     }
 
-                    //if (GameInstance.getUser().ships().size == 10) {
+                    if (GameInstance.getUser().ships().size == 10) {
                         start.visibility = VISIBLE
-                    //}
+                    }
                 } else {
                     val highlighter = ImageView(this@GameMapActivity)
                     highlighter.setImageResource(R.drawable.highlight)
