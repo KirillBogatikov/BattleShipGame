@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/view_back"/>
+
+    <org.battleshipgame.android.views.GameMapView
+        android:id="@+id/user"
+        android:layout_width="@dimen/mapSize"
+        android:layout_height="@dimen/mapSize"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="25dp"/>
+
+    <org.battleshipgame.android.views.GameMapView
+        android:id="@+id/friend"
+        android:layout_width="@dimen/mapSize"
+        android:layout_height="@dimen/mapSize"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"/>
+
+    <RelativeLayout
+        android:id="@+id/locker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/lockerColor">
+
+        <ImageView
+            android:id="@+id/lockerRing"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ring"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextViewStyle.Dark"
+            android:layout_below="@id/lockerRing"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:text="ЗАГРУЗКА..."/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <include layout="@layout/report_button"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,3 @@
+rootProject.name='BattleShipGameV2'
+include 'android', 'core'
+include ':desktop'

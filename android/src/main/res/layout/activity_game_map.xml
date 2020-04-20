@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/view_back"/>
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/rotate"
+        android:onClick="rotateShips"/>
+
+    <org.battleshipgame.android.views.GameMapView
+        android:id="@+id/map"
+        android:layout_width="@dimen/mapSize"
+        android:layout_height="@dimen/mapSize"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="25dp"/>
+
+    <GridLayout
+        android:id="@+id/ships"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="visible"
+        android:columnCount="8">
+
+        <ImageView
+            android:id="@+id/warship"
+            android:layout_width="@dimen/cellSize"
+            android:layout_height="@dimen/warshipSize"
+            android:layout_gravity="center"
+            android:src="@drawable/warship_v"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/warship_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="x1"/>
+
+        <ImageView
+            android:id="@+id/cruiser"
+            android:layout_width="@dimen/cellSize"
+            android:layout_height="@dimen/cruiserSize"
+            android:layout_gravity="center"
+            android:src="@drawable/cruiser_v"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/cruiser_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="x2"/>
+
+        <ImageView
+            android:id="@+id/destroyer"
+            android:layout_width="@dimen/cellSize"
+            android:layout_height="@dimen/destroyerSize"
+            android:layout_gravity="center"
+            android:src="@drawable/destroyer_v"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/destroyer_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="x3"/>
+
+        <ImageView
+            android:id="@+id/torpedo"
+            android:layout_width="@dimen/cellSize"
+            android:layout_height="@dimen/cellSize"
+            android:layout_gravity="center"
+            android:src="@drawable/torpedo_v"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/torpedo_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="x4"/>
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="startGame"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="25dp"
+        android:visibility="gone"
+        android:text="начать игру"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <include layout="@layout/report_button"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

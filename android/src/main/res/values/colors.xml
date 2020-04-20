@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <color name="buttonDefault">#1060BD</color>
+    <color name="buttonPressed">#0D4E99</color>
+    <color name="buttonHovered">#1683FF</color>
+
+    <color name="linesColorDefault">#1060BD</color>
+    <color name="linesColorFocused">#1683FF</color>
+
+    <color name="textColor">#FFFFFF</color>
+    <color name="darkTextColor">#1060BD</color>
+
+    <color name="inputBackgroundDefault">#400D4E99</color>
+    <color name="inputBackgroundFocused">#401683FF</color>
+
+    <color name="lockerColor">#B0FFFFFF</color>
+
+    <color name="highlightBackground">#407F0000</color>
+    <color name="highlightStroke">#FF0000</color>
+
+    <color name="black_overlay">#66000000</color>
+</resources>

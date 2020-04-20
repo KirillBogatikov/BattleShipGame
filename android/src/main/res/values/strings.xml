@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Battle Ship Game</string>
+    <string name="report_title">Отправить сообщение разработчику</string>
+    <string name="report_message_hint">Ваше сообщение</string>
+    <string name="report_name_hint">Ваше имя</string>
+    <string name="report_cancel">Отмена</string>
+    <string name="report_apply">Отправить</string>
+</resources>

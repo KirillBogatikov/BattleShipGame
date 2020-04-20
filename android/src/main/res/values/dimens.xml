@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cellSize">29dp</dimen>
+    <dimen name="destroyerSize">58dp</dimen>
+    <dimen name="cruiserSize">87dp</dimen>
+    <dimen name="warshipSize">116dp</dimen>
+    <dimen name="mapSize">290dp</dimen>
+</resources>
